@@ -92,8 +92,8 @@ class CombatantAuthorizationApi(Resource):
         if card is None:
             return
 
-        authorization = request.json.get('authorization')
-        card.add_authorization(authorization)
+        slug = request.json.get('slug')
+        card.add_authorization(slug)
 
     @classmethod
     @login_required
@@ -112,8 +112,57 @@ class CombatantAuthorizationApi(Resource):
         if card is None:
             return
 
-        authorization = request.json.get('authorization')
-        card.remove_authorization(authorization)
+        slug = request.json.get('slug')
+        card.remove_authorization(slug)
+
+
+@current_app.api.route('/api/combatant/<string:uuid>/warrant')
+class CombatantWarrantApi(Resource):
+    """Endpoint for managing combatant warrants
+
+    Permitted methods: POST, DELETE
+
+    """
+
+    @classmethod
+    @login_required
+    def post(cls, uuid):
+        """Add a warrant
+
+        Returns:
+            200 if all is well
+            400 if any error occurred
+
+        """
+        combatant = Combatant.get_by_uuid(uuid)
+
+        discipline = request.json.get('discipline')
+        card = combatant.get_card(discipline, create=True)
+        if card is None:
+            return
+
+        slug = request.json.get('slug')
+        card.add_warrant(slug)
+
+    @classmethod
+    @login_required
+    def delete(cls, uuid):
+        """Remove an authorization
+
+        Returns:
+            200 if all is well
+            400 if any error occurred
+
+        """
+        combatant = Combatant.get_by_uuid(uuid)
+
+        discipline = request.json.get('discipline')
+        card = combatant.get_card(discipline)
+        if card is None:
+            return
+
+        slug = request.json.get('slug')
+        card.remove_warrant(slug)
 
 
 @current_app.api.route('/api/combatant-list-datatable')

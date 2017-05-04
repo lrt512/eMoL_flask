@@ -73,15 +73,17 @@
                 return;
             }
 
+            var type = $option.hasClass('combatant-auth') ? 'authorization' : 'warrant';
+
             var data = {
                 discipline: $option.data('discipline'),
-                authorization: $option.val(),
+                slug: $option.val(),
                 selected: selected
             }
 
             $.ajax({
                 method: selected ? 'POST' : 'DELETE',
-                url: '/api/combatant/' + uuid + '/authorization',
+                url: '/api/combatant/' + uuid + '/' + type,
                 dataType: 'json',
                 contentType: 'application/json; charset=UTF-8',
                 data: JSON.stringify(data),

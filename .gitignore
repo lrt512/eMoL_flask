@@ -2,6 +2,8 @@ db/
 .key/
 __pycache__/
 **/.idea
+**/.cache
+**/.vagrant
 
 **/*.pyc
 cron_token

@@ -75,7 +75,7 @@
                                                 </option>
                                             {% endfor %}
                                             {% for marshal in discipline.marshals %}
-                                                <option class="combatant-auth" value="{{ marshal.slug }}"
+                                                <option class="combatant-warrant" value="{{ marshal.slug }}"
                                                         data-discipline="{{ discipline.slug }}"
                                                         {{ has_warrant(card, marshal.slug) }}
                                                         {{ has_role_disabled(discipline.slug, 'edit_marshal') }}>
