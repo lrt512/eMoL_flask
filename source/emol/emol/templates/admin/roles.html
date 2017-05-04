@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% autoescape on %}
+    <html>
+    <head>
+        <title>eMOL</title>
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        {% include 'includes/global.html' %}
+    </head>
+    <body>
+    <form id="setup-form" method="POST">
+        <div class="container">
+            <div class="row">
+                <div class="col12">
+                    <h1>Global Role Configuration</h1>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <p>Roles selected here will be applicable to the entire authorization card.</p>
+                    <p>That is, if "can edit card dates" is set to global, the card date selector will apply for
+                        the entire card. If it is not set to global, each discipline can have its own expiration
+                        date.</p>
+                    <p>Obviously, setting some of these to global does not make much sense
+                        (e.g. marshals, authorizations)</p>
+                </div>
+            </div>
+            {% for role in roles %}
+            <div class="row top-space-md">
+                <div class="col-md-12">
+                    <!--suppress HtmlFormInputWithoutLabel -->
+                    <input type="checkbox" name="{{ role.slug }}"/>&nbsp;{{ role.label }}
+                </div>
+            </div>
+            {% endfor %}
+            <div class="row top-space-lg">
+                <div class="col-md-12">
+                    <input type="submit" id="submit" class="btn btn-primary btn-ealdormere"/>
+                </div>
+            </div>
+        </div>
+    </form>
+    </body>
+    </html>
+{% endautoescape %}

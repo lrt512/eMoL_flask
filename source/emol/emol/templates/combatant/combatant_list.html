@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% include 'includes/datatables.html' %}
+    <script type="text/javascript" src="/static/javascript/combatant_list.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 ">
+            <h2>Combatants</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-centered">
+            <table id="combatant-list" class="display" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>SCA Name</th>
+                        <th>Legal Name</th>
+                        <th>Card ID</th>
+                        <th>Privacy</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="edit-form"></div>
+{% endblock %}

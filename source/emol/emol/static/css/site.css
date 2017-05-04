@@ -1,0 +1,273 @@
+@media (min-width: 768px) {
+  .container {
+    max-width: 820px;
+  }
+  .navbar {
+    max-width: 820px;
+    margin: 0 auto;
+  }
+  #navbar.navbar-collapse span.collapsed {
+    display: none;
+  }
+}
+@media (max-width: 767px) {
+  #navbar.navbar-collapse span.collapsed {
+    display: inline;
+  }
+}
+.hidden {
+  display: none;
+}
+.fg-red {
+  color: #942824;
+}
+.bg-green {
+  background-color: #008000;
+}
+.fg-green {
+  color: #008000;
+}
+.nav-pills > li.active > a {
+  background-color: #942824;
+}
+.nav-pills > li.active > a:focus {
+  background-color: #942824;
+}
+.nav-pills > li.active > a:hover {
+  background-color: #a43834;
+  opacity: 0.90;
+}
+/* Override DataTables pagination colours */
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+  background-color: #942824;
+}
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:hover {
+  background-color: #942824;
+  border-color: #000;
+  color: #fff;
+}
+.btn-primary:visited,
+.btn-primary:focus:visited,
+.btn-primary:hover:visited {
+  color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus:hover,
+.btn-primary:hover:hover {
+  background-color: #a43834;
+  opacity: 0.90;
+}
+.message-text {
+  font-size: 12px;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+  display: block;
+}
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}
+.content-centered {
+  text-align: center;
+}
+.top-space-sm {
+  margin-top: 5px;
+}
+.top-space-md {
+  margin-top: 10px;
+}
+.top-space-lg {
+  margin-top: 20px;
+}
+.bottom-space-sm {
+  margin-bottom: 5px;
+}
+.bottom-space-md {
+  margin-bottom: 10px;
+}
+.bottom-space-lg {
+  margin-bottom: 20px;
+}
+.brand {
+  margin-left: 5px;
+  float: left;
+}
+input.input-round {
+  border-radius: 10px;
+  padding: 5px;
+}
+a.btn.btn-lg-width,
+input.btn.btn-lg-width,
+input.lg-width,
+select.lg-width {
+  width: 300px;
+}
+a.btn.btn-md-width,
+input.btn.btn-md-width,
+input.md-width,
+select.md-width {
+  width: 150px;
+}
+a.btn.btn-sm-width,
+input.btn.btn-sm-width,
+input.sm-width,
+select.sm-width {
+  width: 75px;
+}
+a.btn.btn-tall,
+input.btn.btn-tall {
+  line-height: 50px;
+  height: 50px;
+}
+a.btn.btn-short,
+input.btn.btn-short {
+  height: 25px;
+}
+.error {
+  display: block;
+  font-size: 12px;
+  color: red;
+  margin-left: 5px;
+}
+.navbar-brand {
+  color: #777;
+  margin-top: -5px;
+}
+.navbar {
+  border-bottom: 1px solid;
+}
+.navbar-right {
+  margin-right: -15px;
+}
+.navbar-image {
+  height: 16px;
+}
+.navbar-center {
+  display: inline-block;
+  margin: 0 auto !important;
+  float: none;
+}
+.navbar-nav > li {
+  height: 48px;
+}
+.navbar-nav > li a {
+  color: #777;
+}
+.navbar-nav > li a:hover,
+.navbar-nav > li a:focus {
+  color: #fff;
+  background-color: #942824;
+  height: 48px;
+}
+@media (min-width: 768px) {
+  .dropdown .text-menu {
+    height: 24px;
+  }
+  .dropdown .text-menu:hover,
+  .dropdown .text-menu:focus {
+    height: 24px;
+  }
+}
+.navbar-toggle {
+  background-color: #942824;
+}
+.navbar-toggle i {
+  color: #fff;
+}
+table.dataTable thead .sorting_asc:after {
+  content: "\e093" !important;
+}
+table.dataTable thead .sorting_desc:after {
+  content: "\e094" !important;
+}
+label.disabled {
+  color: #aaa;
+}
+option.combatant-auth:disabled {
+  font-style: italic;
+  color: #86989B;
+}
+.modal-footer-error {
+  float: left;
+  color: red;
+  font-size: 12px;
+  font-weight: bold;
+  display: none;
+}
+.form-group {
+  margin-bottom: 10px;
+}
+.fa-2 {
+  font-size: 1.5em !important;
+}
+/* icomoon custom font */
+@font-face {
+  font-family: 'icomoon';
+  src: url('fonts/icomoon.eot?im8mkl');
+  src: url('fonts/icomoon.eot?im8mkl#iefix') format('embedded-opentype'), url('fonts/icomoon.ttf?im8mkl') format('truetype'), url('fonts/icomoon.woff?im8mkl') format('woff'), url('fonts/icomoon.svg?im8mkl#icomoon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+[class^="icon-"],
+[class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'icomoon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Custom fonts are fun! */
+@media (min-width: 768px) {
+  .icon-crossed-swords:before {
+    content: "\e900";
+    font-size: 2.0em;
+    position: relative;
+    top: -3px;
+    height: 48px;
+  }
+}
+@media (max-width: 767px) {
+  .icon-crossed-swords:before {
+    content: "\e900";
+    font-size: 2.0em;
+    margin-left: -4px;
+  }
+  .icon-crossed-swords + .collapsed {
+    position: relative;
+    top: -7px;
+  }
+}
+/* It sort of looks like a sword */
+.icon-eyedropper:before {
+  content: "\e90a";
+}
+.icon-address-book:before {
+  content: "\e944";
+}
+.icon-users:before {
+  content: "\e972";
+}
+.icon-user-plus:before {
+  content: "\e973";
+}
+/* FontAwesome 1.5em size */
+.fa-1-5x {
+  font-size: 1.3em !important;
+}

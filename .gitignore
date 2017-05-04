@@ -1,0 +1,8 @@
+db/
+.key/
+__pycache__/
+**/.idea
+
+**/*.pyc
+cron_token
+emol.log

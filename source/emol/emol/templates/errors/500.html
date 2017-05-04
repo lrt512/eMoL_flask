@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% include 'includes/datatables.html' %}
+    <title>Four-oh-Three</title>
+    <script type="text/javascript" src="/static/javascript/combatant_list.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row-fluid">
+        <div class="span12">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+        <div class="span1">&nbsp;</div>
+        <div class="span6">
+            <h1>Light!</h1>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span1">&nbsp;</div>
+        <div class="span2">
+            <img src="/static/images/dead_wolf.gif"/>
+        </div>
+        <div class="span3">
+            <span class="hidden-phone">Something has gone spectacularly wrong here.  Whatever you did...don't do it again.</span><br/><br/>
+            <span class="hidden-phone">We've sent an error report off to the code monkeys to fix it. Don't worry, it probably isn't actually your fault.  Probably.</span><br/><br/>
+            <a href="/" class="btn btn-md btn-ealdormere">Flee to safety</a>
+        </div>
+    </div>
+    {% if debug %}
+        <div class="row-fluid">
+            <div class="span12">&nbsp;</div>
+        </div>
+        <div class="row-fluid">
+            <div class="span1">&nbsp;</div>
+            <div class="span8">
+                <pre>{{ exception }}</pre>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

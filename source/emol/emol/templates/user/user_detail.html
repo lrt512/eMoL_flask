@@ -1,0 +1,106 @@
+<!--suppress ALL -->
+<div class="modal fade" id="user-detail" role="dialog">
+    <div class="modal-dialog" style="width:800px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4>
+                    <span class="glyphicon glyphicon-pencil"></span>
+                    {% if user == none %} New User {% else %} {{ user.email }}{% endif %}
+                </h4>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a data-toggle="tab" href="#info">Global</a></li>
+                    {% for discipline in disciplines %}
+                        <li><a data-toggle="tab" href="#{{ discipline.slug }}">{{ discipline.name }}</a></li>
+                    {% endfor %}
+                </ul>
+                <form id="user-detail-form" action="/api/user">
+                    <div class="tab-content">
+                        <div id="info" class="tab-pane fade in active">
+                            <div class="row form-group top-space-lg">
+                                <label for="user-detail-email" class="col-md-1 col-form-label">Email</label>
+                                <div class="col-md-5">
+                                    <input type="text" id="user-detail-email" class="form-control" name="email"
+                                           value="{{ user.email }}" required/>
+                                    <input type="hidden" name="id" value="{{ user.id }}">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <select class="picklist" multiple="multiple" name="global">
+                                            {% for role in roles %}
+                                                {% if role.is_global == True %}
+                                                    <option value="{{ role.slug }}" {{ has_role_select(None, role.slug) }}>
+                                                        {{ role.name }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        {% for discipline in disciplines %}
+                            <div id="{{ discipline.slug }}" class="tab-pane fade in">
+                                <div class="row top-space-md">
+                                    <div class="col-md-12">
+                                        <span style="margin-left:5px;">
+                                            <b>Assign Roles for {{ discipline.name }}</b>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <select class="picklist" multiple="multiple" name="{{ discipline.slug }}">
+                                            {% for role in roles %}
+                                                {% if role.is_global == False %}
+                                                    <option value="{{ role.slug }}" {{ has_role_select(discipline.slug, role.slug) }}>
+                                                        {{ role.name }}
+                                                    </option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </form>
+            </div>
+            <div class="clearfix"></div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-cancel" value="Cancel"/>
+                <input type="button" class="btn btn-ealdormere btn-save" value="Save"/>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(function()
+    {
+        var combatant_state = function()
+        {
+            var edit_checked = $('[name="edit_combatant_info"]').prop('checked');
+
+            if (edit_checked === true)
+            {
+                $('[name="view_combatant_info"]').prop('checked', true);
+            }
+        };
+
+        $('[name="edit_combatant_info"], [name="view_combatant_info"]').click(combatant_state);
+
+        $(document).ready(function()
+        {
+            $('#user-detail-email').focus();
+            $('#user-detail-form').validate();
+            $('.picklist').bootstrapDualListbox({
+                moveOnSelect: true,
+                showFilterInputs: false,
+                infoText: false
+            });
+            combatant_state();
+        });
+    });
+</script>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% include 'includes/datatables.html' %}
+    <script type="text/javascript" src="/static/javascript/user_list.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 ">
+            <h2>Users</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-centered">
+            <table id="user-list" class="display" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="edit-form"></div>
+{% endblock %}

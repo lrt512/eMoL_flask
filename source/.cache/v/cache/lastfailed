@@ -1,0 +1,10 @@
+{
+  "emol/emol/models/tests/test_combatant.py::test_create_admin": true,
+  "emol/emol/models/tests/test_combatant.py::test_create_anonymous": true,
+  "emol/emol/models/tests/test_combatant.py::test_create_privileged[privileged_user0]": true,
+  "emol/emol/models/tests/test_combatant.py::test_create_unprivileged": true,
+  "emol/emol/models/tests/test_reminders.py::test_card_reminder": true,
+  "emol/emol/models/tests/test_reminders.py::test_two": true,
+  "emol/emol/views/tests/test_views.py::test_card_reminder": true,
+  "emol/emol/views/tests/test_views.py::test_two": true
+}

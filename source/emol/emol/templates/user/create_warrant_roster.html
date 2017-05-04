@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <script type="text/javascript">
+        (function($)
+        {
+            "use strict";
+
+            $(document).ready(function()
+            {
+                $('#coronation-date').datepicker({
+                    format: "yyyy-mm-dd",
+                    autoclose: true
+                });
+
+                $('#rex, #regina').on('change', function()
+                {
+                    var rex = $('#rex').val(),
+                            regina = $('#regina').val();
+
+                    console.info(rex, regina);
+
+                    if (is_defined_not_empty(rex) && is_defined_not_empty(regina))
+                    {
+                        $('#reign-title').val(
+                                rex.split(' ')[0] +
+                                ' & ' +
+                                regina.split(' ')[0]
+                        );
+                    }
+                });
+
+                $('#generate').click(function()
+                {
+                    var data = {
+                        rex: $('#rex').val(),
+                        regina: $('#regina').val(),
+                        date: $('#coronation-date').val(),
+                        reign: $('#reign-title').val(),
+                        discipline: $('#discipline').find('option:selected').val()
+                    };
+
+                    $.ajax({
+                        method: 'POST',
+                        url: '/api/warrant-roster',
+                        data: JSON.stringify(data),
+                        type: 'json',
+                        success: function(result)
+                        {
+                            console.info(result);
+                        },
+                        error: function(xhr)
+                        {
+                            console.info(xhr);
+                        }
+                    })
+                });
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 ">
+            <h2>Warrant Roster</h2>
+        </div>
+    </div>
+
+    <form method="POST" target="_blank">
+        <div class="row">
+            <label for="rex" class="col-md-2">Rex</label>
+            <div class="col-md-4">
+                <input type="text" id="rex" name="rex" class="lg-width initial-focus">
+            </div>
+        </div>
+        <div class="row">
+            <label for="regina" class="col-md-2">Regina</label>
+            <div class="col-md-4">
+                <input type="text" id="regina" name="regina" class="lg-width">
+            </div>
+        </div>
+        <div class="row">
+            <label for="coronation-date" class="col-md-2">Coronation Date</label>
+            <div class="col-md-4">
+                <input type="text" id="coronation-date" name="coronation-date" readonly>
+            </div>
+        </div>
+        <div class="row">
+            <label for="reign-title" class="col-md-2">Reign</label>
+            <div class="col-md-4">
+                <input type="text" id="reign-title" name="reign-title" class="lg-width">
+            </div>
+        </div>
+        <div class="row">
+            <label for="discipline" class="col-md-2">Discipline</label>
+            <div class="col-md-4">
+                <select id="discipline" name="discipline">
+                    {% for discipline in disciplines %}
+                        <option value="{{ discipline.slug }}">{{ discipline.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-10"></div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary" id="generate">Generate</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

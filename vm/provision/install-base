@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# NOTE: this will be run as user vagrant 
+
+# Make sure the dpkg locks are gone in case we had a previous failure
+sudo rm /var/lib/apt/lists/lock
+sudo rm /var/cache/apt/archives/lock
+sudo rm /var/lib/dpkg/lock
+
+sudo apt-get update
+
+# MySQL with super secret passwords
+export DEBIAN_FRONTEND="noninteractive"
+
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password password qwert"
+sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again password qwert"
+
+sudo apt-get install -y mysql-server libmysqlclient-dev
+
+# all other packages
+sudo apt-get install -y build-essential python3.4-venv python3.4-dev ruby2.0 ruby2.0-dev apache2 libsqlite3-dev supervisor libapache2-mod-fcgid
+
+# set system timezone to match Ealdormere
+sudo timedatectl set-timezone America/Toronto
+
+# mailcatcher
+[ "$(type -p mailcatcher)" ] || sudo gem2.0 install mailcatcher
+
+# cp /etc files
+sudo rsync -rltpv /vagrant/provision/files/etc/ /etc
+
+# do the rest from home directory
+cd /home/vagrant
+
+# create symlinks to dotfiles
+ln -s -f /vagrant/provision/files/dotfiles/.??* .
+
+# restart supervisor to fire up mailcatcher
+sudo supervisorctl reload
+
+# enable mod_rewrite
+sudo a2enmod rewrite
+sudo service apache2 restart

@@ -1,0 +1,175 @@
+.hidden {
+  display: none;
+}
+.fg-red {
+  color: #942824;
+}
+.bg-green {
+  background-color: #008000;
+}
+.fg-green {
+  color: #008000;
+}
+.nav-pills > li.active > a {
+  background-color: #942824;
+}
+.nav-pills > li.active > a:focus {
+  background-color: #942824;
+}
+.nav-pills > li.active > a:hover {
+  background-color: #a43834;
+  opacity: 0.90;
+}
+/* Override DataTables pagination colours */
+.pagination > .active > a,
+.pagination > .active > a:focus,
+.pagination > .active > a:hover,
+.pagination > .active > span,
+.pagination > .active > span:focus,
+.pagination > .active > span:hover {
+  background-color: #942824;
+}
+.btn-primary,
+.btn-primary:focus,
+.btn-primary:hover {
+  background-color: #942824;
+  border-color: #000;
+  color: #fff;
+}
+.btn-primary:visited,
+.btn-primary:focus:visited,
+.btn-primary:hover:visited {
+  color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus:hover,
+.btn-primary:hover:hover {
+  background-color: #a43834;
+  opacity: 0.90;
+}
+.message-text {
+  font-size: 12px;
+}
+.left {
+  text-align: left;
+}
+.right {
+  text-align: right;
+  display: block;
+}
+.col-centered {
+  float: none;
+  margin: 0 auto;
+}
+.content-centered {
+  text-align: center;
+}
+.top-space-sm {
+  margin-top: 5px;
+}
+.top-space-md {
+  margin-top: 10px;
+}
+.top-space-lg {
+  margin-top: 20px;
+}
+.bottom-space-sm {
+  margin-bottom: 5px;
+}
+.bottom-space-md {
+  margin-bottom: 10px;
+}
+.bottom-space-lg {
+  margin-bottom: 20px;
+}
+.brand {
+  margin-left: 5px;
+  float: left;
+}
+input.input-round {
+  border-radius: 10px;
+  padding: 5px;
+}
+a.btn.btn-lg-width,
+input.btn.btn-lg-width,
+input.lg-width,
+select.lg-width {
+  width: 300px;
+}
+a.btn.btn-md-width,
+input.btn.btn-md-width,
+input.md-width,
+select.md-width {
+  width: 150px;
+}
+a.btn.btn-sm-width,
+input.btn.btn-sm-width,
+input.sm-width,
+select.sm-width {
+  width: 75px;
+}
+a.btn.btn-tall,
+input.btn.btn-tall {
+  line-height: 50px;
+  height: 50px;
+}
+a.btn.btn-short,
+input.btn.btn-short {
+  height: 25px;
+}
+.error {
+  display: block;
+  font-size: 12px;
+  color: red;
+  margin-left: 5px;
+}
+.navbar-custom {
+  background-color: #942824;
+  color: #ffffff;
+  border-radius: 0;
+}
+.navbar-nav {
+  width: 100%;
+  text-align: center;
+}
+.navbar-nav > li {
+  float: none;
+  display: inline-block;
+}
+.navbar-custom .navbar-nav > li > a {
+  color: #fff;
+}
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a.focus {
+  color: #ffffff;
+  background-color: #a43834;
+}
+.navbar-custom .navbar-brand {
+  color: #eeeeee;
+}
+table.dataTable thead .sorting_asc:after {
+  content: "\e093" !important;
+}
+table.dataTable thead .sorting_desc:after {
+  content: "\e094" !important;
+}
+label.disabled {
+  color: #aaa;
+}
+option.combatant-auth:disabled {
+  font-style: italic;
+  color: #86989B;
+}
+.modal-footer-error {
+  float: left;
+  color: red;
+  font-size: 12px;
+  font-weight: bold;
+  display: none;
+}
+.form-group {
+  margin-bottom: 10px;
+}
+.fa-2 {
+  font-size: 1.5em !important;
+}

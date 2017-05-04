@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+{% autoescape on %}
+    <html>
+    <head>
+        <title>eMOL</title>
+        <meta name="viewport"
+              content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        {% include 'includes/global.html' %}
+        <script src="static/lib/bootstrap-wizard/jquery.bootstrap.wizard.min.js"></script>
+        <script src="static/javascript/setup.js"></script>
+        <script src="static/javascript/list_thing.js"></script>
+    </head>
+    <body>
+    <div class="container">
+        <form id="setup" method="post">
+            <div id="rootwizard">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container">
+                            <ul>
+                                <li><a href="#tab1" data-toggle="tab">Test</a></li>
+                                <li><a href="#tab2" data-toggle="tab">Config</a></li>
+                                <li><a href="#tab3" data-toggle="tab">Admins</a></li>
+                                <li><a href="#tab4" data-toggle="tab">Disciplines</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-content">
+                    <div class="tab-pane" id="tab1">
+                        <!-- Results of configuration test -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>Check environment and configuration</h4>
+                            </div>
+                        </div>
+                        <div class="row top-space-lg">
+                            <input type="hidden" id="config-test" value="{{ next_ok }}"/>
+                            <div class="col-md-6">
+                                {% if db_exists == True %}
+                                    <span class="fg-red">Database is already set up</span>
+                                {% else %}
+                                    <span class="fg-green">Database is not yet set up</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% if can_connect == True %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    {% if db_exists == True %}
+                                        <span class="fg-green">Database "{{ db_database }}" exists</span>
+                                    {% else %}
+                                        <span class="fg-red">Database "{{ db_database }}" apparently does not exist
+                                (Is database missing? Does user have proper permissions?)</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="row top-space-md"></div>
+                        {% for result in key_results %}
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <span class="{{ 'fg-green' if result.get('status') else 'fg-red' }}">
+                                        {{ result.get('message') }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        {% if next_ok == False %}
+                            <div class="row">
+                                <div class="col-md-12 top-space-md">
+                                    <h4>Please correct the problem areas above and try again</h4>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <!-- Configuration Tab -->
+                    <div class="tab-pane" id="tab2">
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label for="encryption_key" style="float:right;">Encryption Key</label>
+                            </div>
+                            <div class="col-md-10">
+                                <input type="text" name="encryption_key" id="encryption_key" class="lg-width"
+                                       minlength="16" maxlength="16" required/>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Admin accounts tab -->
+                    <div class="tab-pane" id="tab3">
+                        <div class="row ">
+                            <div class="col-md-8">
+                                Add the email address of at least one Google account that will have system administration
+                                access to eMoL.
+                            </div>
+                        </div>
+                        <div id="admin-email-list-thing" class="list-thing">
+                            {% with list_thing_id="admin-list", arrange_buttons="hidden" %}
+                                {% include 'widgets/list_thing.html' %}
+                            {% endwith %}
+                        </div>
+                    </div>
+                    <!-- Disciplines tab -->
+                    <div class="tab-pane" id="tab4">
+                        <div class="row ">
+                            <div class="col-md-6">
+                                <input type="checkbox" id="global-card-date" name="global-card-date"/>
+                                <label for="global-card-date">One card date for all disciplines&nbsp;
+                            <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                                  data-placement="bottom" title="If checked, authorization cards will have
+                            one expiry date for all disciplines. Otherwise, each discipline will have
+                            its own expiry date on the card."></span></label>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-md-6">
+                                <input type="checkbox" id="global-waiver-date" name="global-waiver-date"/>
+                                <label for="global-waiver-date">One waiver date for all disciplines&nbsp;
+                            <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip"
+                                  data-placement="bottom" title="If checked, combatants will have one waiver
+                            on file for all disciplines, and one waiver expiry date on the card.
+                            Otherwise, each discipline will have its own waiver on file and each discipline
+                            will show its own waiver expiry date on the card."></span></label>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-md-6">
+                                <hr/>
+                                Add each discipline you wish to track authorizations and/or marshallate status for.
+                                For each discipline, go to its tab and enter the names of its authorizations.
+                            </div>
+                        </div>
+                        <div class="row top-space-lg">
+                            <div class="col-md-12">
+                                <ul class="nav nav-pills" id="discipline-nav">
+                                    <li class="active"><a data-toggle="tab"
+                                                          href="#manage-disciplines-tab">Disciplines</a>
+                                    </li>
+                                </ul>
+                                <div class="tab-content" id="discipline-tabs">
+                                    <div id="manage-disciplines-tab" class="tab-pane active">
+                                        <div id="disciplines-list-thing" class="list-thing">
+                                            {% with list_thing_id="discipline-list" %}
+                                                {% include 'widgets/list_thing.html' %}
+                                            {% endwith %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <ul class="pager wizard">
+                        <li class="previous"><a href="javascript:;">Previous</a></li>
+                        <li class="next"><a href="javascript:;">Next</a></li>
+                        <li class="next finish" style="display:none;"><a href="javascript:;">Finish</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div id="errors" class="hidden">
+                <ul id="error-list">
+                    <li>This is an error</li>
+                </ul>
+            </div>
+        </form>
+        <div class="hidden" id="finished">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>All Done!</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    eMoL is configured and ready to go now. Your next steps:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <ul>
+                        <li>Head to the home page</li>
+                        <li>Log in as one of the system users</li>
+                        <li>Set up your Kingdom Marshals and Ministers of the List as users</li>
+                        <li>Import your combatants</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="row top-space-lg">
+                    <div class="col-md-4">
+                        <a id="home" class="btn btn-lg btn-sm-width btn-primary" href="/">Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="discipline-tab-template" class="tab-pane hidden">
+        <div class="row">
+            <div class="col-md-6">
+                Add authorizations here
+            </div>
+            <div class="col-md-6">
+                Add marshals here
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="list-thing authorizations">
+                    {% include 'widgets/list_thing.html' %}
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="list-thing marshals">
+                    {% include 'widgets/list_thing.html' %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+    </html>
+{% endautoescape %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% include 'includes/datatables.html' %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/js/bootstrap-select.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.1/css/bootstrap-select.min.css" />
+    <script type="text/javascript" src="/static/javascript/officer_list.js"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-12 ">
+            <h2>Kingdom Officers</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-centered">
+            <table id="officer-list" class="display" width="100%">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Title</th>
+                        <th>Name</th>
+                        <th>SCA Name</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+    <div id="edit-form"></div>
+{% endblock %}

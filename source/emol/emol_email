@@ -1,0 +1,6 @@
+#!/bin/bash
+
+cron_token=/home/vagrant/source/emol/cron_token
+token=`cat $cron_token`
+curl -X POST -s localhost:5000/api/cron/$token/daily_check > /dev/null
+

@@ -1,0 +1,110 @@
+<nav class="navbar">
+    <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+            <i class="fa fa-bars fa-2"></i>
+          </button>
+            <a class="navbar-brand" href="/"><span><img src="/static/images/ealdormere32.png"/>&nbsp;eMoL</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar">
+            <ul class="nav navbar-nav">
+                {% if current_user is defined and not current_user.is_anonymous %}
+                    <li><a href="/home" title="Home">
+                        <i class="fa fa-home fa-1-5x" aria-hidden="true"></i>
+                        <span class="collapsed">Home</span>
+                    </a></li>
+                    {% if current_user.is_admin %}
+                        <li><a href="/user-list" title="Users">
+                            <i class="fa fa-user-plus fa-1-5x" aria-hidden="true"></i>
+                            <span class="collapsed">User List</span>
+                        </a></li>
+                    {% endif %}
+                    {% if current_user.has_role(None, 'can_edit_officers') %}
+                        <li><a href="/officer-list" title="Kingdom Officers">
+                            <i class="fa fa-user-circle-o fa-1-5x" aria-hidden="true"></i>
+                            <span class="collapsed">Officer List</span>
+                        </a></li>
+                    {% endif %}
+                    {% if current_user.can_see_combatant_list %}
+                        <li><a href="/combatant-list" title="Combatants">
+                            <span class="icon-crossed-swords"></span>
+                            <span class="collapsed">Combatant List</span>
+                        </a></li>
+                        <li><a href="/combatant-stats" title="Combatant Statistics">
+                            <i class="fa fa-line-chart fa-1-5x" aria-hidden="true"></i>
+                            <span class="collapsed">Combatant Stats</span>
+                        </a></li>
+                    {% endif %}
+                    {% if current_user.has_role('any', 'warrant_roster') %}
+                        <li><a href="/warrant-roster" title="Warrant Roster">
+                            <i class="fa fa-file-text-o fa-1-5x" aria-hidden="true"></i>
+                            <span class="collapsed">Warrant Roster</span>
+                        </a></li>
+                    {% endif %}
+                    {% if current_user.has_role('any', 'can_import') %}
+                        <li><a href="/import" title="Import Combatants">
+                            <i class="fa fa-upload fa-1-5x" aria-hidden="true"></i>
+                            <span class="collapsed">Import Combatants</span>
+                        </a></li>
+                    {% endif %}
+                {% endif %}
+            </ul>
+
+            <ul class="nav navbar-nav  navbar-right">
+                {% if current_user is not defined or current_user.is_anonymous %}
+                    <li><a href="/login">Sign In</a></li>
+                {% else %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle no-change" data-toggle="dropdown">
+                            {{ current_user.email }}
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/logout" class="text-menu">Sign Out</a></li>
+                        </ul>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+        {#  {% if current_user is defined %}
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu"></button>
+
+            {% if not current_user.is_anonymous and not http_error %}
+                <ul class="nav navbar-nav" id="menu">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-bars fa-2"></i>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/home"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Home</a></li>
+                            {% if current_user is defined and current_user.is_admin %}
+                                <li><a href="/user-list"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;User List</a></li>
+                            {% endif %}
+                            {% if current_user is defined and current_user.has_role(None, 'can_edit_officers') %}
+                                <li><a href="/officer-list"><i class="fa fa-user-circle-o" aria-hidden="true"></i>&nbsp;Kingdom Officers</a></li>
+                            {% endif %}
+                            {% if current_user is defined and current_user.can_see_combatant_list %}
+                                <li><a href="/combatant-list"><i class="fa fa-user-o" aria-hidden="true"></i>&nbsp;Combatant List</a></li>
+                                <li><a href="/combatant-stats"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;Combatant Statistics</a></li>
+                            {% endif %}
+                            {% if current_user is defined and current_user.has_role('any', 'warrant_roster') %}
+                                <li><a href="/warrant-roster"><i class="fa fa-file-text-o" aria-hidden="true"></i>&nbsp;Warrant Roster</a></li>
+                            {% endif %}
+                            {% if current_user is defined and current_user.has_role('any', 'can_import') %}
+                                <li><a href="/import"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Import Combatants</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            {% endif %}
+         {% endif %}#}
+
+<script>
+    $(document).ready(function()
+    {
+
+    });
+</script>
