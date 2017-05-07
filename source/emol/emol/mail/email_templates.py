@@ -66,7 +66,7 @@ Ealdormere eMoL
 '''
 
 # Template for card expiry reminder email
-CARD_EXPIRY_SUBJECT = 'Card expiry reminder'
+CARD_EXPIRY_SUBJECT = 'Card expiry notice'
 CARD_EXPIRY_EMAIL = '''Greetings!
 
 Your Ealdormere authorizations for {discipline} have expired as of today.
@@ -168,7 +168,7 @@ EMAIL_TEMPLATES = {
         'body': CARD_REMINDER_EMAIL
     },
     'waiver_reminder': {
-        'subject': WAIVER_REMINDER_EMAIL,
+        'subject': WAIVER_REMINDER_SUBJECT,
         'body': WAIVER_REMINDER_EMAIL
     },
     'card_expiry': {

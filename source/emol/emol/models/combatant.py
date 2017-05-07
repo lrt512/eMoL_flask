@@ -112,6 +112,10 @@ class Combatant(app.db.Model):
     # Decrypted data after load
     _decrypted = None
 
+    def __repr__(self):
+        """Printable representation."""
+        return '<Combatant: {0.email} ({0.name})>'.format(self)
+
     @property
     def decrypted(self):
         """Accessor for encrypted data.
@@ -124,7 +128,7 @@ class Combatant(app.db.Model):
 
         """
         if self._decrypted is None:
-            if self.encrypted == b'dummy':
+            if self.encrypted is None:
                 self._decrypted = {}
             else:
                 self._decrypted = app.cipher().decrypt_json(self.encrypted)
@@ -329,34 +333,23 @@ class Combatant(app.db.Model):
 
     @classmethod
     @role_required('edit_combatant_info')
-    def create_or_update(cls, data, no_create=False):
-        """Create or update a combatant using a dict of data.
+    def create(cls, data):
+        """Create a combatant.
 
         Data included in _combatant_info will be updated if the user's roles
         allow. Everything else will be ignored.
 
         Args:
             data: A dictionary of combatant data
-            no_create:  Don't create the combatant if does not exist
-                        (for self-serve updates)
 
         """
         # Look up via original_email in case this is a case of
         # combatant email being changed
-        original_email = data.get('original_email')
+        email = data.get('email')
         try:
-            combatant = Combatant.query.filter(Combatant.email == original_email).one()
-        except NoResultFound:
-            # original_email is probably None
-            combatant = None
-
-        errors = []
-
-        is_new = combatant is None
-        if combatant is None:
-            if no_create is True:
-                return
-
+            combatant = cls.get_by_email(email)
+            raise Exception('Combatant {0} already exists'.format(email))
+        except CombatantDoesNotExist:
             logging.info('New combatant: %s', data.get('legal_name'))
             # Make sure all required fields are present
             for field, required in cls._combatant_info.items():
@@ -365,34 +358,46 @@ class Combatant(app.db.Model):
 
             combatant = cls(
                 email=data.get('email'),
-                encrypted=bytes('dummy', 'UTF-8')
+                encrypted=None
             )
-        else:
-            logging.info('Updating combatant: %s', combatant.decrypted.get('legal_name'))
 
+            app.db.session.add(combatant)
+            return combatant.update(data, is_new=True)
+
+    @role_required('edit_combatant_info')
+    def update(self, data, is_new=False):
+        """Create or update a combatant using a dict of data.
+
+        Data included in _combatant_info will be updated if the user's roles
+        allow. Everything else will be ignored.
+
+        Args:
+            data: A dictionary of combatant data
+            is_new:  Combatant is being updated for the first time after creation
+
+        """
+        print(current_user.has_role(None, 'edit_waiver_date'))
         if current_user.has_role(None, 'edit_waiver_date'):
-            if combatant.waiver is None:
-                waiver = Waiver(combatant_id=combatant.id)
-                app.db.session.add(waiver)
-            else:
-                waiver = combatant.waiver
+            date_str = data.get('waiver_date')
+            if date_str is not None:
+                if self.waiver is None:
+                    self.waiver = Waiver.create(self)
 
-            waiver.update(data.get('waiver_date'))
+                self.waiver.renew(date_str)
 
         # Invoke update_info for updating data that can be done via self-serve
-        combatant.update_info(data, is_new)
+        self.update_info(data, is_new)
 
-        combatant.update_encrypted()
-        combatant.last_update = datetime.utcnow()
+        self.update_encrypted()
+        self.last_update = datetime.utcnow()
+        app.db.session.commit()
 
         if is_new:
-            app.db.session.add(combatant)
             # Invoke the create class method to generate the
             # record, send an email, etc.
-            PrivacyAcceptance.create(combatant)
+            PrivacyAcceptance.create(self)
 
-        app.db.session.commit()
-        return combatant
+        return self
 
     # named tuple for return values from update_info
     UpdateInfoReturn = namedtuple('UpdateInfoReturn', ['sca_name', 'email'])

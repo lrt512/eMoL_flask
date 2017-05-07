@@ -40,7 +40,7 @@ class Emailer(object):
     """
 
     @classmethod
-    def _send_email(cls, recipient, subject, body):
+    def send_email(cls, recipient, subject, body):
         """Send an email.
 
         Args:
@@ -98,7 +98,7 @@ class Emailer(object):
             expiry_days=expiry_days,
             expiry_date=combatant.waiver_expiry
         )
-        return cls._send_email(combatant.email, template.get('subject'), body)
+        return cls.send_email(combatant.email, template.get('subject'), body)
 
     @classmethod
     def send_card_reminder(cls, combatant, expiry_days):
@@ -114,7 +114,7 @@ class Emailer(object):
             expiry_days=expiry_days,
             expiry_date=combatant.card_expiry
         )
-        return cls._send_email(combatant.email, template.get('subject'), body)
+        return cls.send_email(combatant.email, template.get('subject'), body)
 
     @classmethod
     def send_waiver_reminder(cls, combatant, expiry_days):
@@ -130,7 +130,7 @@ class Emailer(object):
             expiry_days=expiry_days,
             expiry_date=combatant.waiver_expiry
         )
-        return cls._send_email(combatant.email, template.get('subject'), body)
+        return cls.send_email(combatant.email, template.get('subject'), body)
 
     @classmethod
     def send_info_update(cls, combatant, update_request):
@@ -145,7 +145,7 @@ class Emailer(object):
         body = template.get('body').format(
             update_url=update_request.change_info_url
         )
-        return cls._send_email(combatant.email, template.get('subject'), body)
+        return cls.send_email(combatant.email, template.get('subject'), body)
 
     @classmethod
     def send_card_request(cls, combatant):
@@ -164,7 +164,7 @@ class Emailer(object):
             body = template.get('body').format(
                 card_url=combatant.card_url
             )
-            return cls._send_email(
+            return cls.send_email(
                 combatant.email,
                 template.get('subject'),
                 body
@@ -191,7 +191,7 @@ class Emailer(object):
         body = template.get('body').format(
             privacy_policy_url=privacy_acceptance.privacy_policy_url
         )
-        return cls._send_email(
+        return cls.send_email(
             privacy_acceptance.combatant.email,
             template.get('subject'),
             body

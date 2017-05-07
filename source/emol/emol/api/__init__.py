@@ -8,3 +8,4 @@ import emol.api.combatant_api
 import emol.api.combatant_update_api
 import emol.api.privacy_policy_api
 import emol.api.cron_api
+import emol.api.import_api

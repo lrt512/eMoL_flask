@@ -1,23 +1,19 @@
-(function($)
-{
+(function ($) {
     "use strict";
 
-    function save_button()
-    {
+    function save_button() {
         var uuid = $('#uuid').val();
 
-        if (undefined === uuid || null === uuid || uuid.length == 0)
-        {
+        if (undefined === uuid || null === uuid || uuid.length == 0) {
             $('li.discipline-tab').addClass('hidden')
         }
-        else
-        {
+        else {
             $('li.discipline-tab').removeClass('hidden')
             $('.btn-save').toggleClass('hidden', !$('#info-tab').hasClass('active'));
         }
     }
 
-    $(document).ready(function() {
+    $(document).ready(function () {
         var dataTable = null,
             combatant_list = $('#combatant-list');
 
@@ -51,8 +47,14 @@
                 return;
             }
 
+            var url = '/api/combatant/';
+            if (method === 'PUT')
+            {
+                url += $('#uuid').val();
+            }
+
             $.ajax({
-                url: '/api/combatant',
+                url: url,
                 method: method,
                 data: serialize_form(),
                 dataType: 'json',
@@ -64,12 +66,10 @@
             });
         }
 
-        function selection_changed($option, selected)
-        {
+        function selection_changed($option, selected) {
             var uuid = $('#uuid').val();
 
-            if (undefined === uuid || null === uuid || uuid.length == 0)
-            {
+            if (undefined === uuid || null === uuid || uuid.length == 0) {
                 return;
             }
 
@@ -87,8 +87,7 @@
                 dataType: 'json',
                 contentType: 'application/json; charset=UTF-8',
                 data: JSON.stringify(data),
-                success: function(response)
-                {
+                success: function (response) {
 
                 }
             })
@@ -99,27 +98,21 @@
          */
         $.fn.dataTable.ext.buttons.new_combatant = {
             text: 'New',
-            action: function(e, dt, node, config)
-            {
-                $('#edit-form').load('/combatant-detail/new', function()
-                {
+            action: function (e, dt, node, config) {
+                $('#edit-form').load('/combatant-detail/new', function () {
                     var combatant_detail = $('#combatant-detail');
 
-                    combatant_detail.find('.btn-save').click(function()
-                    {
-                        submit_combatant('POST', function()
-                        {
+                    combatant_detail.find('.btn-save').click(function () {
+                        submit_combatant('POST', function () {
                             save_button();
                             dataTable.ajax.reload(false);
                         });
                     });
 
-                    combatant_detail.find('.btn-close').click(function()
-                    {
+                    combatant_detail.find('.btn-close').click(function () {
                         combatant_detail.modal('hide');
                     });
-                    combatant_detail.one('hidden.bs.modal', function(event)
-                    {
+                    combatant_detail.one('hidden.bs.modal', function (event) {
                         combatant_detail.remove();
                     });
 
@@ -136,31 +129,25 @@
             }
         };
 
-        combatant_list.on('click', '.btn-edit', function(evnt)
-        {
+        combatant_list.on('click', '.btn-edit', function (evnt) {
             var tr = evnt.target.closest('tr'),
                 row = dataTable.row(tr),
                 uuid = row.data().uuid;
 
-            $('#edit-form').load('/combatant-detail/' + uuid, function()
-            {
+            $('#edit-form').load('/combatant-detail/' + uuid, function () {
                 var combatant_detail = $('#combatant-detail');
 
-                combatant_detail.find('.btn-save').click(function()
-                {
-                    submit_combatant('PUT', function()
-                    {
+                combatant_detail.find('.btn-save').click(function () {
+                    submit_combatant('PUT', function () {
                         save_button();
                         dataTable.ajax.reload(false);
                     });
                 });
 
-                combatant_detail.find('.btn-close').click(function()
-                {
+                combatant_detail.find('.btn-close').click(function () {
                     combatant_detail.modal('hide');
                 });
-                combatant_detail.one('hidden.bs.modal', function(event)
-                {
+                combatant_detail.one('hidden.bs.modal', function (event) {
                     combatant_detail.remove();
                 });
 
@@ -176,24 +163,48 @@
             });
         });
 
+        combatant_list.on('click', '.btn-delete', function (evnt) {
+            var tr = evnt.target.closest('tr'),
+                row = dataTable.row(tr),
+                uuid = row.data().uuid,
+                name = row.data().sca_name || row.data().legal_name;
+
+            var confirm = window.confirm('Confirm delete: ' + name);
+            if (confirm === false)
+            {
+                return;
+            }
+
+            $.ajax({
+                url: '/api/combatant/' + uuid,
+                method: 'DELETE',
+                success: function()
+                {
+                    dataTable.ajax.reload(false);
+                }
+            });
+        });
+
         dataTable = combatant_list.DataTable({
-            dom: 'Bfrtip',
+            dom: 'Bfrt',
             ajax: '/api/combatant-list-datatable',
             order: [1, 'asc'],
+            scrollY: "300px",
+            scrollX: false,
+            scrollCollapse: true,
+            paging: false,
             columns: [
                 {
-                    defaultContent: '<button type="button" class="btn btn-xs btn-ealdormere btn-edit">Edit</button>',
+                    defaultContent: '<button type="button" title="Edit" class="btn btn-xs btn-primary btn-edit"><i style="margin-left:2px;" class="fa fa-pencil-square-o" aria-hidden="true"></i></button>',
                     orderable: false
                 },
                 {data: "sca_name"},
                 {data: "legal_name"},
                 {
                     data: "card_id",
-                    render: function(data, type, full, meta)
-                    {
-                        if (data)
-                        {
-                            return data + '&nbsp;<button type="button" class="btn btn-xs btn-primary btn-view-card">View</button>';
+                    render: function (data, type, full, meta) {
+                        if (data) {
+                            return data + '&nbsp;<button type="button" title="View card" class="btn btn-xs btn-primary btn-view-card"><i class="fa fa-eye" aria-hidden="true"></i></button>';
                         }
                         return '';
                     }
@@ -201,14 +212,16 @@
                 {
                     data: "accepted_privacy_policy",
                     width: "75px",
-                    render: function(data, type, full, meta)
-                    {
-                        if (true === data)
-                        {
+                    render: function (data, type, full, meta) {
+                        if (true === data) {
                             return '<i class="fa fa-check fa-lg fg-green"></i>';
                         }
-                        return '<i class="fa fa-close fa-lg fg-red"></i> <button type="button" class="btn btn-xs btn-primary btn-resend-privacy">Resend</button>';
+                        return '<i class="fa fa-close fa-lg fg-red"></i> <button type="button" title="Resend privacy policy" class="btn btn-xs btn-primary btn-resend-privacy"><i class="fa fa-repeat" aria-hidden="true"></i></button>';
                     }
+                },
+                {
+                    defaultContent: '<button type="button" title="Delete" class="btn btn-xs btn-primary btn-delete"><i class="fa fa-trash-o" aria-hidden="true"></i></button>',
+                    orderable: false
                 },
                 {data: "uuid", visible: false}
             ],
@@ -217,13 +230,11 @@
         });
     });
 
-    $(document).on('change', '.picklist', function(event)
-    {
+    $(document).on('change', '.picklist', function (event) {
         console.info($(this).attr('name'));
-    })
+    });
 
-    $(document).on('click', '.btn-resend-privacy', function()
-    {
+    $(document).on('click', '.btn-resend-privacy', function () {
         var row = $(this).parents('tr'),
             data = $('#combatant-list').DataTable().row(row).data();
 
@@ -231,15 +242,13 @@
             method: 'POST',
             url: '/api/resend_privacy/' + data.uuid,
             type: 'json',
-            success: function(response)
-            {
+            success: function (response) {
                 console.info(response);
             }
         });
     });
 
-    $(document).on('click', '.btn-view-card', function()
-    {
+    $(document).on('click', '.btn-view-card', function () {
         var row = $(this).parents('tr'),
             data = $('#combatant-list').DataTable().row(row).data();
 
@@ -252,8 +261,7 @@
         }
     });
 
-    $(document).on('shown.bs.tab', function()
-    {
+    $(document).on('shown.bs.tab', function () {
         save_button();
     });
 }(jQuery));

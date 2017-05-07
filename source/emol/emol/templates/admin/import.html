@@ -1,98 +1,182 @@
-<!DOCTYPE html>
-{% autoescape on %}
-<html>
-<head>
-    <title>eMOL</title>
-    {% include 'includes/global.html' %}
-</head>
-<body>
-    <!-- Start Content -->
-    <div class="container-fluid">
-        {% include 'topnav.html' %}
-        <div id="wrapper">
-            <div id="content">
-                <div class="widget">
-                    <div class="widget-head">
-                        <h4 class="heading">Import Combatant Info</h4>
-                    </div>
-                    <div class="widget-body">
-                        <div class="row-fluid">
-                            <div class="span12">
-                                Combatant information must be comma separated values (CSV).
-                            </div>
-                            <div class="clearfix"></div>
-                            <div class="span12">
-                                <p>Date format is YYYY-MM-DD, authorizations are listed as "yes" or "no"</p>
-                            </div>
-                            <div class="row-fluid">
-                                {% if discipline == 'armour' %}
-                                <div class="span3">
-                                    <a target="_blank" href="/sample_armour.csv">Sample Armour CSV</a>
-                                </div>
-                                {% endif %}
-                                {% if discipline == 'rapier' %}
-                                <div class="span3">
-                                    <a target="_blank" href="/sample_fencing.csv">Sample Fencing CSV</a>
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="row-fluid">
-                                <div class="span12">
-                                Left column is combatant basic info fields, right column is discipline specific fields. <b>Bold</b> fields are mandatory.
-                                </div>
-                            </div>
-                            <div class="row-fluid">
-                                <div class="span5">
-                                    <ul>
-                                        <li><b>legal_name</b> - Legal name</li>
-                                        <li>sca_name - SCA name</li>
-                                        <li><b>email</b> - Email address</li>
-                                        <li><b>phone</b> - Phone number</li>
-                                        <li><b>address1</b> - First address line</li>
-                                        <li>address2 - Second address line</li>
-                                        <li><b>city</b> - City</li>
-                                        <li><b>province</b> - Province</li>
-                                        <li><b>postal_code</b> - Postal code</li>
-                                        <li>card_date - Card expiry date</li>
-                                        <li><b>waiver_date</b> - Date on waiver</li>
-                                        <li>dob - Date of birth for minors</li>
-                                        <li>member_number - SCA membership number</li>
-                                        <li>member_expiry - SCA membership expiry</li>
-                                    </ul>
-                                </div>
-                                <div class="span4">
-                                    {% set discipline = find_discipline_class(discipline) %}
-                                    <ul>
-                                        {% for auth in discipline.auth_set %}
-                                        <li>{{ auth.slug }} - {{ auth.friendly }}</li>
-                                        {% endfor %}
-                                        <li>marshal - Marshal</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <hr class="separator" />
-                        <form id="import-form" method="post" enctype="multipart/form-data">
-                            <div class="row-fluid">
-                                <div class="span12">
-                                    <div class="fileupload fileupload-new" data-provides="fileupload">
-                                        <div class="input-append">
-                                            <div class="uneditable-input span3"><i class="icon-file fileupload-exists"></i> <span class="fileupload-preview"></span></div><span class="btn btn-file"><span class="fileupload-new">Select file</span><span class="fileupload-exists">Change</span><input type="file" name="import_file"/></span><a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+{% extends "base.html" %}
 
-                            <div class="form-actions">
-                                <button type="submit" class="btn btn-icon btn-primary glyphicons upload"><i></i>Import</button>
-                                <button type="button" class="btn btn-icon btn-default glyphicons circle_remove"><i></i>Cancel</button>
-                            </div>
-                        </form>
+{% block head %}
+    <script>
+        $(document).ready(function () {
+            $('#file').change(function () {
+                if ($(this).val().length > 0) {
+                    $('#import').prop('disabled', false);
+                }
+            });
+
+            $('#discipline').change(function () {
+                console.info($(this))
+                var discipline = $(this).find(':selected').val();
+                $('.auth-fields').addClass('hidden');
+                $('#fields-' + discipline).removeClass('hidden');
+            });
+
+            $('#import').click(function () {
+                event.stopPropagation();
+                event.preventDefault();
+
+                var data = new FormData($('#import-form')[0]);
+
+                $.ajax({
+                    url: '/api/import',
+                    method: 'POST',
+                    data: data,
+                    dataType: 'json',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    success: function () {
+
+                    }
+                });
+            });
+            //$("#discipline").val($("#discipline option:first").val());
+            $("#discipline").trigger('change');
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="form-group tab-content">
+        <div class="form-group row">
+            <div class="col-md-12">
+                Combatant information must be comma separated values (CSV).
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-12">
+                Left column is combatant basic info fields, right column is discipline specific fields.
+                <b>Bold</b> fields are mandatory.
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <b>Combatant Info</b>
                     </div>
                 </div>
+                <div class="row top-space-md">
+                    <div class="col-md-5"><b>legal_name</b></div>
+                    <div class="col-md-7">Legal name</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">sca_name</div>
+                    <div class="col-md-7">SCA name</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>email</b></div>
+                    <div class="col-md-7">Email address</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>phone</b></div>
+                    <div class="col-md-7">Phone number</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>address1</b></div>
+                    <div class="col-md-7">First address line</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">address2</div>
+                    <div class="col-md-7">Second address line</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>city</b></div>
+                    <div class="col-md-7">City</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>province</b></div>
+                    <div class="col-md-7">Province</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>postal_code</b></div>
+                    <div class="col-md-7">Postal code</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5"><b>waiver_date</b></div>
+                    <div class="col-md-7">Date on waiver</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">dob</div>
+                    <div class="col-md-7">Date of birth for minors</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">member_number</div>
+                    <div class="col-md-7">SCA membership number</div>
+                </div>
+                <div class="row">
+                    <div class="col-md-5">member_expiry</div>
+                    <div class="col-md-7">SCA membership expiry</div>
+                </div>
+                </ul>
+            </div>
+            {% for discipline in disciplines %}
+                <div class="col-md-6 hidden auth-fields" id="fields-{{ discipline.slug }}">
+                    <div class="row bottom-space-md">
+                        <div class="col-md-12">
+                            <b>{{ discipline.name }} Authorizations and Warrants</b>
+                        </div>
+                    </div>
+                    {% for auth in discipline.authorizations %}
+                        <div class="row">
+                            <div class="col-md-5">{{ auth.slug }}</div>
+                            <div class="col-md-6">{{ auth.name }}</div>
+                        </div>
+                    {% endfor %}
+                    {% for marshal in discipline.marshals %}
+                        <div class="row">
+                            <div class="col-md-5">{{ marshal.slug }}</div>
+                            <div class="col-md-6">{{ marshal.name }}</div>
+                        </div>
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-md-5">card_date</div>
+                        <div class="col-md-7">Card expiry date</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-group row">
+            <div class="col-md-12">
+                Date format is YYYY-MM-DD, authorizations are listed as "yes" or "no"
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-md-12">
+                If member_number and member_expiry are not given, no warrants will be assigned.
             </div>
         </div>
     </div>
-</body>
-</html>
-{% endautoescape %}
+    <hr class="separator"/>
+    <div class="form-group tab-content">
+        <form id="import-form">
+            <div class="form-group row">
+                <div class="col-md-2">Discipline:</div>
+                <div class="col-md-4">
+                    <select id="discipline" name="discipline">
+                        {% for discipline in disciplines %}
+                            <option value="{{ discipline.slug }}">{{ discipline.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-md-2">File:</div>
+                <div class="col-md-4">
+                    <input type="file" name="file" id="file"/>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="button" id="import" class="btn btn-icon btn-primary glyphicons upload" disabled>
+                    <i></i>Import
+                </button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

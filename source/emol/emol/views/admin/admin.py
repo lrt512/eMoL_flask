@@ -9,16 +9,20 @@ from flask import Blueprint, render_template, request
 
 # application imports
 from emol.decorators import admin_required
+from emol.models import Discipline
 
 BLUEPRINT = Blueprint('admin', __name__)
 
 
 @admin_required
-@BLUEPRINT.route('/import/<discipline>')
-def import_combatants(discipline):
+@BLUEPRINT.route('/import')
+def import_combatants():
     """Mass import handler."""
     if request.method == 'GET':
-        return render_template('admin/import.html', discipline=discipline)
+        return render_template(
+            'admin/import.html',
+            disciplines=Discipline.query.all()
+        )
 
     elif request.method == 'POST':
         pass

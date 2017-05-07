@@ -92,7 +92,8 @@ def combatant_data():
         address2='Apartment 12',
         city='Anytown',
         province='ON',
-        postal_code='A1A 1A1'
+        postal_code='A1A 1A1',
+        waiver_date='2015-01-01'
     )
 
     yield COMBATANT_DATA
@@ -100,12 +101,14 @@ def combatant_data():
 @pytest.fixture
 @pytest.mark.parametrize(
     'privileged_user',
-    [{ None: ['edit_combatant_info'], 'rapier': ['edit_authorizations']}],
+    [{ None: ['edit_combatant_info', 'edit_waiver_date'], 'rapier': ['edit_authorizations']}],
     indirect=True
 )
 def combatant(app, combatant_data):
-    c = Combatant.create_or_update(combatant_data)
+    print(Combatant.query.all())
+    c = Combatant.create(combatant_data)
 
     yield c
 
     app.db.session.delete(c)
+    app.db.session.flush()

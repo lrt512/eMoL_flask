@@ -30,12 +30,14 @@ def daily_check():
     today = datetime.now(LOCAL_TZ).date()
     reminders = CardReminder.query.filter(CardReminder.reminder_date <= today).all()
     for reminder in reminders:
-        print('card', reminder)
-        reminder.delete()
+        reminder.mail()
+        current_app.db.session.remove(reminder)
 
     reminders = WaiverReminder.query.filter(WaiverReminder.reminder_date <= today).all()
     for reminder in reminders:
-        print('waiver', reminder)
-        reminder.delete()
+        reminder.mail()
+        current_app.db.session.remove(reminder)
+
+    current_app.db.session.commit()
 
     current_app.logger.info('Daily check complete')

@@ -22,7 +22,7 @@ from emol.decorators import login_required
 from emol.models import Combatant
 
 
-@current_app.api.route('/api/combatant')
+@current_app.api.route('/api/combatant/<string:uuid>')
 class CombatantApi(Resource):
     """Endpoint for combatant creation and updates.
 
@@ -44,12 +44,12 @@ class CombatantApi(Resource):
             400 if any error occurred
 
         """
-        combatant = Combatant.create_or_update(request.json)
+        combatant = Combatant.create(request.json)
         return {'uuid': combatant.uuid}
 
     @classmethod
     @login_required
-    def put(cls):
+    def put(cls, uuid):
         """Update an existing combatant.
 
         Delegates incoming combatant data to the Combatant model class. If
@@ -63,8 +63,23 @@ class CombatantApi(Resource):
             400 if any error occurred
 
         """
-        combatant = Combatant.create_or_update(request.json)
+        combatant = Combatant.get_by_uuid(uuid)
+        combatant.update(request.json)
         return {'uuid': combatant.uuid}
+
+    @classmethod
+    @login_required
+    def delete(cls, uuid):
+        """Delete a combatant.
+
+        Returns:
+            200 if all is well
+            400 if any error occurred
+
+        """
+        combatant = Combatant.get_by_uuid(uuid)
+        current_app.db.session.delete(combatant)
+        current_app.db.session.commit()
 
 
 @current_app.api.route('/api/combatant/<string:uuid>/authorization')

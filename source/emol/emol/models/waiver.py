@@ -11,7 +11,7 @@ from flask import current_app as app
 # application imports
 from emol.mail import Emailer
 from emol.mail.email_templates import EMAIL_TEMPLATES
-from emol.utility.date import add_years, DATE_FORMAT, LOCAL_TZ
+from emol.utility.date import add_years, string_to_date, DATE_FORMAT, LOCAL_TZ
 
 __all__ = ['Waiver']
 
@@ -35,23 +35,63 @@ class Waiver(app.db.Model):
         backref=app.db.backref('waiver', uselist=False)
     )
 
-    reminders = app.db.relationship('WaiverReminder')
+    @classmethod
+    def create(cls, combatant, waiver_date=None):
+        """Create a waiver and schedule its reminders."""
+        waiver = cls(combatant_id=combatant.id)
+        app.db.session.add(waiver)
+        waiver.renew(waiver_date)
+        app.db.session.commit()
+        return waiver
+
+    def renew(self, waiver_date=None):
+        """Renew this waiver.
+
+        Args:
+            waiver_date: Optional waiver date, defaults to today.
+
+        """
+        # Delete any existing reminders
+        self.reminders.clear()
+
+        # Update the card date
+        if isinstance(waiver_date, str):
+            waiver_date = string_to_date(waiver_date)
+
+        self.waiver = waiver_date or date.today()
+
+        today = datetime.now(LOCAL_TZ).date()
+
+        # Create the reminder for expiry day
+        # expiry = (today + relativedelta(years=cls.duration, days=0))
+        expiry_date = (today + relativedelta(days=3))
+        WaiverReminder.schedule(self, expiry_date, is_expiry=True)
+
+        # Reminders at the specified points before expiry day
+        for days in WaiverReminder.reminders:
+            reminder_date = expiry_date - relativedelta(days=days)
+            WaiverReminder.schedule(self, reminder_date, is_expiry=False)
+
+        app.db.session.commit()
 
     @property
     def expiry_date(self):
-        """Get the combatant's authorization card expiry date.
+        """Get the waiver expiry date."""
+        return add_years(self.waiver, 7)
 
-        That is, the self.waiver + CARD_DURATION years
+    @property
+    def expiry_date_str(self):
+        """Get the combatant's authorization card expiry date as a string."""
+        return self.expiry_date.strftime(DATE_FORMAT)
 
-        Returns:
-            Date of the card's expiry date
-
-        """
-        return add_years(self.waiver, 2).strftime(DATE_FORMAT)
+    @property
+    def expiry_days(self):
+        """Number of days until this card expires."""
+        return (self.expiry_date - date.today()).days
 
     def update(self, waiver_date):
+        """Update the waiver date."""
         self.waiver = waiver_date
-        print(waiver_date)
         app.db.session.commit()
 
 
@@ -67,7 +107,10 @@ class WaiverReminder(app.db.Model):
     reminder_date = app.db.Column(app.db.Date)
 
     waiver_id = app.db.Column(app.db.Integer, app.db.ForeignKey('waiver.id'))
-    waiver = app.db.relationship('Waiver')
+    waiver = app.db.relationship(
+        'Waiver',
+        backref = app.db.backref('reminders', cascade='all, delete-orphan')
+    )
 
     is_expiry = app.db.Column(app.db.Boolean, nullable=False)
 
@@ -83,52 +126,33 @@ class WaiverReminder(app.db.Model):
             subject = template.get('subject')
             body = template.get('body')
         else:
-            template = EMAIL_TEMPLATES.get('waiver_expiry')
+            template = EMAIL_TEMPLATES.get('waiver_reminder')
             subject = template.get('subject')
-            expiry_days = self.waiver.expiry_date - date.today()
             body = template.get('body').format(
-                expiry_days.days,
-                expiry_date=self.waiver.expiry_date
+                expiry_days=self.waiver.expiry_days,
+                expiry_date=self.waiver.expiry_date_str
             )
 
-        return Emailer().send_email(self.combatant.email, subject, body)
+        return Emailer().send_email(self.waiver.combatant.email, subject, body)
 
     @classmethod
-    def schedule(cls, combatant):
-        """Schedule card expiry reminders for a combatant.
+    def schedule(cls, waiver, reminder_date, is_expiry):
+        """Schedule waiver expiry reminders for a combatant.
 
         Args:
             combatant: The combatant to schedule reminders for
         """
-        # Delete existing reminders so we don't spam anyone
-        combatant.waiver_reminders.delete()
-
-        today = datetime.now(LOCAL_TZ).date()
-        # Check the date as stored in the database, which is N back from today
-        # expiry = (today + relativedelta(years=cls.duration, days=0))
-        expiry = (today + relativedelta(days=3))
-        app.logger.debug('schedule waiver expiry for {1}'.format(expiry))
-
-        # Create the reminder for expiry day
-        reminder = cls(
-            date=expiry,
-            combatant=combatant,
-            is_expiry=True
+        app.logger.debug(
+            'schedule waiver {0} for {1}'.format(
+                'expiry' if is_expiry else 'reminder',
+                reminder_date
+            )
+        )
+        reminder = WaiverReminder(
+            reminder_date=reminder_date,
+            waiver_id=waiver.id,
+            is_expiry=is_expiry
         )
         app.db.session.add(reminder)
 
-        # Reminders at the specified points before expiry day
-        for days in cls.reminders:
-            reminder = expiry - relativedelta(days=days)
-            app.logger.debug('schedule waiver reminder for {1}'.format(reminder))
-
-            # pylint complains about no-member for Pony objects but it's good
-            # pylint: disable=no-member
-            reminder = cls(
-                date=reminder.isoformat(),
-                combatant=combatant,
-                is_expiry=False
-            )
-            app.db.session.add(reminder)
-
-        app.db.session.commit()
+    app.db.session.commit()

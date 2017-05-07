@@ -103,10 +103,20 @@ class Card(app.db.Model):
         That is, the self.card + CARD_DURATION years
 
         Returns:
-            Date of the card's expiry date
+            Date of the card's expiry date as a string
 
         """
-        return add_years(self.card_date, 2).strftime(DATE_FORMAT)
+        return add_years(self.card_date, 2)
+
+    @property
+    def expiry_date_str(self):
+        """Get the combatant's authorization card expiry date as a string."""
+        return self.expiry_date.strftime(DATE_FORMAT)
+
+    @property
+    def expiry_days(self):
+        """Number of days until this card expires."""
+        return (self.expiry_date - date.today()).days
 
     def add_authorization(self, authorization):
         """Add an authorization to this card.
@@ -151,7 +161,6 @@ class Card(app.db.Model):
             authorization: An authorization slug, id, or object
 
         """
-        print(authorization)
         authorization = Authorization.find(self.discipline, authorization)
 
         return authorization in self.authorizations
@@ -221,12 +230,12 @@ class Card(app.db.Model):
         # Create the reminder for expiry day
         # expiry = (today + relativedelta(years=cls.duration, days=0))
         expiry_date = (today + relativedelta(days=3))
-        CardReminder.schedule(self, expiry_date, False)
+        CardReminder.schedule(self, expiry_date, is_expiry=True)
 
         # Reminders at the specified points before expiry day
         for days in CardReminder.reminders:
             reminder_date = expiry_date - relativedelta(days=days)
-            CardReminder.schedule(self, reminder_date, False)
+            CardReminder.schedule(self, reminder_date, is_expiry=False)
 
         app.db.session.commit()
 
@@ -255,25 +264,24 @@ class CardReminder(app.db.Model):
 
     def mail(self):
         """Send reminder or expiry email as appropriate to this instance."""
-        discipline = self.discipline.slug if self.discipline else None
-
+        discipline = self.card.discipline
         if self.is_expiry is True:
             template = EMAIL_TEMPLATES.get('card_expiry')
             subject = template.get('subject')
             body = template.get('body').format(
-                discipline=self.discipline.slug
+                discipline=discipline.name
             )
         else:
-            template = EMAIL_TEMPLATES.get('card_expiry')
+            template = EMAIL_TEMPLATES.get('card_reminder')
             subject = template.get('subject')
-            expiry_days = self.combatant.card_expiry(discipline) - date.today()
+            print(self.card.expiry_days)
             body = template.get('body').format(
-                expiry_days.days,
-                expiry_date=self.combatant.card_expiry(discipline),
-                discipline = self.discipline.slug
+                expiry_days=self.card.expiry_days,
+                expiry_date=self.card.expiry_date_str,
+                discipline=discipline.name
             )
 
-        return Emailer().send_email(self.combatant.email, subject, body)
+        return Emailer().send_email(self.card.combatant.email, subject, body)
 
     @classmethod
     def schedule(cls, card, reminder_date, is_expiry):

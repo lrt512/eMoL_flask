@@ -45,7 +45,7 @@ class PrivacyAcceptance(app.db.Model):
     combatant_id = app.db.Column(app.db.Integer, app.db.ForeignKey('combatant.id'))
     combatant = app.db.relationship(
         'Combatant',
-        backref=app.db.backref('privacy_acceptance', uselist=False)
+        backref=app.db.backref('privacy_acceptance', uselist=False, cascade="all, delete-orphan")
     )
 
     uuid = app.db.Column(app.db.String(36), default=default_uuid)
@@ -64,6 +64,9 @@ class PrivacyAcceptance(app.db.Model):
 
         """
         privacy_acceptance = cls(combatant=combatant)
+        app.db.session.add(privacy_acceptance)
+        app.db.session.commit()
+
         emailer = Emailer()
         emailer.send_privacy_policy_acceptance(privacy_acceptance)
 
