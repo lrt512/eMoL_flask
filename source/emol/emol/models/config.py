@@ -7,7 +7,8 @@ General storage as key-value pairs for config items
 
 # standard library imports
 from datetime import datetime, date
-import dateutil.parser
+from dateutil import parser
+import json
 
 # third-party imports
 from flask import current_app as app
@@ -32,7 +33,7 @@ class Config(app.db.Model):
     value = app.db.Column(app.db.String(32767), nullable=True)
     type = app.db.Column(app.db.Integer, nullable=True)
 
-    data_types = [str, int, float, datetime, date, bool]
+    data_types = [str, int, float, datetime, date, bool, list]
 
     @classmethod
     def set(cls, key, value):
@@ -45,15 +46,20 @@ class Config(app.db.Model):
         if value is None:
             config.value = None
             config.type = None
+        elif isinstance(value, list):
+            config.value = json.dumps(value)
+            config.type = 6
         elif isinstance(value, bool):
             config.value = '1' if value else '0'
             config.type = 5
-        elif isinstance(value, datetime):
-            config.value = value.isoformat()
-            config.type = 3
-        elif isinstance(value, date):
+        elif type(value) is date:
+            # Need to use the more explict check here as isinstance will
+            # lead you astray if value is a datetime
             config.value = value.isoformat()
             config.type = 4
+        elif type(value) is datetime:
+            config.value = value.isoformat()
+            config.type = 3
         else:
             config.value=str(value)
             config.type=cls.data_types.index(type(value))
@@ -71,10 +77,12 @@ class Config(app.db.Model):
             return None
 
         if config.type == 3:
-            return dateutil.parser.parse(config.value)
+            return parser.parse(config.value)
         elif config.type == 4:
-            return dateutil.parser.parse(config.value)
+            return parser.parse(config.value).date()
         elif config.type == 5:
             return True if config.value == '1' else False
+        elif config.type == 6:
+            return json.loads(config.value)
         else:
             return cls.data_types[config.type](config.value)
