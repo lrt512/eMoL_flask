@@ -224,8 +224,6 @@ class User(app.db.Model):
         if self.has_role(discipline, role):
             return
 
-        print(discipline, role)
-
         user_role = UserRole(
             user=self,
             role=Role.query.filter(Role.slug == role).one(),

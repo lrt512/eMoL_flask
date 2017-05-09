@@ -64,7 +64,6 @@ def privileged_user(app, admin_user, unprivileged_user, request):
     flask_login.logout_user()
     flask_login.login_user(admin_user)
 
-    print(request.param)
     for key, roles in request.param.items():
         unprivileged_user.add_roles(key, roles)
 

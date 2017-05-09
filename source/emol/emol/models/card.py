@@ -272,7 +272,7 @@ class CardReminder(app.db.Model):
                 expiry_date=self.card.expiry_date_str,
                 discipline=discipline.name
             )
-        print(Emailer)
+
         return Emailer().send_email(self.card.combatant.email, subject, body)
 
     @classmethod

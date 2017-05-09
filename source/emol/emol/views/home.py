@@ -27,7 +27,6 @@ def index():
     else display the nouser home page
 
     """
-    print(222)
     if is_setup() is False:
         current_app.logger.info('Redirecting to setup')
         return redirect(url_for('setup.setup'))
@@ -166,5 +165,4 @@ def update_info():
 @BLUEPRINT.route('/embed-message', methods=['GET'])
 def message():
     """Render the message view."""
-    print(request.data)
     return render_template('message/message_embed.html')
