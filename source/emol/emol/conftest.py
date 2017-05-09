@@ -61,8 +61,10 @@ def privileged_user(app, admin_user, unprivileged_user, request):
 
     """
     # Log in admin user to assign roles
+    flask_login.logout_user()
     flask_login.login_user(admin_user)
 
+    print(request.param)
     for key, roles in request.param.items():
         unprivileged_user.add_roles(key, roles)
 
@@ -95,17 +97,33 @@ def combatant_data():
         waiver_date='2015-01-01'
     )
 
-@pytest.fixture(scope='function')
-@pytest.mark.parametrize(
-    'privileged_user',
-    [{ None: ['edit_combatant_info', 'edit_waiver_date'], 'rapier': ['edit_authorizations']}],
-    indirect=True
-)
-def combatant(app, combatant_data):
-    print('combatant')
+
+@pytest.fixture
+def fixture_user(app):
+    """A user that isn't privileged_user for combatant to do its thing."""
+    user = User(email='fixture@ealdormere.ca', system_admin=False)
+    user.add_roles(None, ['edit_combatant_info', 'edit_waiver_date'])
+    user.add_roles('rapier', ['edit_authorizations'])
+    user.add_roles('armoured-combat', ['edit_authorizations'])
+    app.db.session.add(user)
+
+    flask_login.logout_user()
+    flask_login.login_user(user)
+
+    yield user
+
+    app.db.session.delete(user)
+
+
+@pytest.fixture
+def combatant(app, combatant_data, fixture_user):
+
     # Fixture wants no email sent, with no check for sent/not-sent
     with Mockmail('emol.models.privacy_acceptance', None):
         c = Combatant.create(combatant_data)
+        c.get_card('rapier', create=True)
+
+    flask_login.logout_user()
 
     yield c
 

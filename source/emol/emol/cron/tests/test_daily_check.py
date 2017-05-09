@@ -5,15 +5,11 @@ from emol.cron.daily_check import daily_check
 from emol.models import WaiverReminder
 from emol.utility.testing import Mocktoday, Mockmail
 
+
 # Card
-@pytest.mark.parametrize(
-    'privileged_user',
-    [{ None: ['edit_combatant_info', 'edit_waiver_date'], 'rapier':['edit_authorizations']}],
-    indirect=True
-)
-def test_daily_check_card(app, privileged_user, combatant):
+def test_daily_check_card(app, combatant):
     """Test daily check consuming card reminders."""
-    card = combatant.get_card('rapier', create=True)
+    card = combatant.get_card('rapier')
     assert len(card.reminders) == 3
 
     card_dates = [r.reminder_date for r in card.reminders]
@@ -32,12 +28,7 @@ def test_daily_check_card(app, privileged_user, combatant):
 
 # Waiver
 
-@pytest.mark.parametrize(
-    'privileged_user',
-    [{ None: ['edit_combatant_info', 'edit_waiver_date']}],
-    indirect=True
-)
-def test_daily_check_waiver(app, privileged_user, combatant):
+def test_daily_check_waiver(app, combatant):
     """Test daily check consuming waiver reminders."""
     assert len(combatant.waiver.reminders) == 3
 
@@ -56,12 +47,7 @@ def test_daily_check_waiver(app, privileged_user, combatant):
     assert len(combatant.waiver.reminders) == 0
 
 
-@pytest.mark.parametrize(
-    'privileged_user',
-    [{ None: ['edit_combatant_info', 'edit_waiver_date']}],
-    indirect=True
-)
-def test_daily_check_waiver_renew_first(app, privileged_user, combatant):
+def test_daily_check_waiver_renew_first(app, combatant):
     """Test daily check with waiver renew after first reminder."""
     waiver_dates = [r.reminder_date for r in combatant.waiver.reminders]
 
@@ -100,7 +86,7 @@ def test_daily_check_waiver_renew_first(app, privileged_user, combatant):
     [{ None: ['edit_combatant_info', 'edit_waiver_date']}],
     indirect=True
 )
-def test_daily_check_waiver_renew_second(app, privileged_user, combatant):
+def test_daily_check_waiver_renew_second(app, combatant, privileged_user):
     """Test daily check with waiver renew after second reminder."""
     waiver_dates = [r.reminder_date for r in combatant.waiver.reminders]
 
@@ -145,7 +131,7 @@ def test_daily_check_waiver_renew_second(app, privileged_user, combatant):
     [{ None: ['edit_combatant_info', 'edit_waiver_date']}],
     indirect=True
 )
-def test_daily_check_waiver_renew_expired(app, privileged_user, combatant):
+def test_daily_check_waiver_renew_expired(app, combatant, privileged_user):
     """Test daily check with waiver renew after expiry."""
     waiver_dates = [r.reminder_date for r in combatant.waiver.reminders]
 

@@ -12,7 +12,7 @@ from emol.utility.testing import Mockmail
     [{ None: ['edit_combatant_info']}],
     indirect=True
 )
-def test_privacy_not_accepted(app, privileged_user, combatant):
+def test_privacy_not_accepted(app, combatant, privileged_user):
     """Test combatant that has not accepted yet."""
     assert combatant.card_id is None
     assert combatant.accepted_privacy_policy is False
@@ -25,7 +25,7 @@ def test_privacy_not_accepted(app, privileged_user, combatant):
     [{ None: ['edit_combatant_info']}],
     indirect=True
 )
-def test_privacy_declined(app, privileged_user, combatant):
+def test_privacy_declined(app, combatant, privileged_user):
     """Test declined privacy policy."""
     resolution = combatant.privacy_acceptance.resolve(False)
     assert resolution.get('accepted') is False
@@ -41,7 +41,7 @@ def test_privacy_declined(app, privileged_user, combatant):
     [{ None: ['edit_combatant_info']}],
     indirect=True
 )
-def test_privacy_accepted(app, privileged_user, combatant):
+def test_privacy_accepted(app, combatant, privileged_user):
     """Test accepted privacy policy."""
     with Mockmail('emol.models.privacy_acceptance', True):
         resolution = combatant.privacy_acceptance.resolve(True)

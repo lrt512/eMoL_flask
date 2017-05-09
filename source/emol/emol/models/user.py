@@ -224,10 +224,12 @@ class User(app.db.Model):
         if self.has_role(discipline, role):
             return
 
+        print(discipline, role)
+
         user_role = UserRole(
             user=self,
             role=Role.query.filter(Role.slug == role).one(),
-            discipline=Discipline.query.filter(Discipline.slug == discipline).one() if discipline else None
+            discipline=Discipline.find(discipline) if discipline else None
         )
 
         app.db.session.add(user_role)
