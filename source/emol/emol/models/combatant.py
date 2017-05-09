@@ -72,7 +72,16 @@ class Combatant(app.db.Model):
     email = app.db.Column(app.db.String(255), unique=True)
     sca_name = app.db.Column(app.db.String(255))
 
-    cards = app.db.relationship('Card', cascade='all, delete-orphan')
+    cards = app.db.relationship(
+        'Card',
+        cascade='all, delete-orphan'
+    )
+    waiver = app.db.relationship(
+        'Waiver',
+        cascade='all, delete-orphan',
+        backref='combatant',
+        uselist=False
+    )
 
     # Data fields for creating combatants
     # Anything marked True is required
@@ -114,7 +123,7 @@ class Combatant(app.db.Model):
 
     def __repr__(self):
         """Printable representation."""
-        return '<Combatant: {0.email} ({0.name})>'.format(self)
+        return '<Combatant {0.id}: {0.email} ({0.name})>'.format(self)
 
     @property
     def decrypted(self):
@@ -277,7 +286,10 @@ class Combatant(app.db.Model):
 
         """
         if self.privacy_acceptance.accepted is None:
-            print('Privacy policy not accepted, not generating card id')
+            app.logger.error(
+                'Privacy policy not accepted by {0.email}, not generating card id'
+                .format(self)
+            )
             raise PrivacyPolicyNotAccepted
 
         hashed = Sha256.generate_hash(self.decrypted.get('legal_name'))
@@ -286,11 +298,11 @@ class Combatant(app.db.Model):
         self.card_id = ''
 
         if not self.sca_name:
-            print('Hashing legal name')
+            app.logger.debug('Hashing legal name for {0.email}'.format(self))
             # No SCA name, use a hash
             card_id = hashed[count:count+6]
         else:
-            print('Slugifying SCA name')
+            app.logger.debug('Slugifying SCA name for {0.email}'.format(self))
             card_id = slugify(self.sca_name)
 
         # Ensure uniqueness
@@ -362,6 +374,7 @@ class Combatant(app.db.Model):
             )
 
             app.db.session.add(combatant)
+            app.db.session.commit()
             return combatant.update(data, is_new=True)
 
     @role_required('edit_combatant_info')
@@ -376,14 +389,13 @@ class Combatant(app.db.Model):
             is_new:  Combatant is being updated for the first time after creation
 
         """
-        print(current_user.has_role(None, 'edit_waiver_date'))
         if current_user.has_role(None, 'edit_waiver_date'):
             date_str = data.get('waiver_date')
             if date_str is not None:
                 if self.waiver is None:
                     self.waiver = Waiver.create(self)
-
-                self.waiver.renew(date_str)
+                else:
+                    self.waiver.renew(date_str)
 
         # Invoke update_info for updating data that can be done via self-serve
         self.update_info(data, is_new)

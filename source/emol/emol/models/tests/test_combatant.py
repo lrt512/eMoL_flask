@@ -3,6 +3,7 @@ import pytest
 from werkzeug.exceptions import Unauthorized
 
 from emol.models import Combatant, Card, CardReminder
+from emol.utility.testing import Mockmail
 
 
 def test_create_anonymous(app, combatant_data):
@@ -14,7 +15,9 @@ def test_create_anonymous(app, combatant_data):
 
 def test_create_admin(app, admin_user, combatant_data):
     """Test create user as admin."""
-    combatant = Combatant.create(combatant_data)
+    with Mockmail('emol.models.privacy_acceptance', True):
+        combatant = Combatant.create(combatant_data)
+
     assert combatant is not None
 
     app.db.session.delete(combatant)
@@ -33,7 +36,9 @@ def test_create_unprivileged(app, unprivileged_user, combatant_data):
 )
 def test_create_authorized(app, privileged_user, combatant_data):
     """Test create user as with a valid and privileged user."""
-    combatant = Combatant.create(combatant_data)
+    with Mockmail('emol.models.privacy_acceptance', True):
+        combatant = Combatant.create(combatant_data)
+
     assert combatant is not None
 
     app.db.session.delete(combatant)

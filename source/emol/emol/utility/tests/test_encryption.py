@@ -56,11 +56,15 @@ def test_encrypt_json(cipher):
     json_data = json.dumps(data)
 
     ciphertext = cipher.encrypt_json(data)
-    decrypted = cipher.decrypt_json(ciphertext)
 
-    decrypted_json = json.dumps(decrypted)
+    decrypted_json = cipher.decrypt(ciphertext)
     assert decrypted_json == json_data
-    assert decrypted == data
+
+    # Dict order is not guaranteed, so check by key/value
+    decrypted = cipher.decrypt_json(ciphertext)
+    for key, value in data.items():
+        assert key in decrypted
+        assert decrypted[key] == value
 
 
 def test_encrypt_wrong_key(cipher, cipher2):

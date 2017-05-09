@@ -52,7 +52,7 @@ class PrivacyAcceptance(app.db.Model):
     accepted = app.db.Column(app.db.DateTime)
 
     @classmethod
-    def create(cls, combatant):
+    def create(cls, combatant, no_email=False):
         """Generate a PrivacyAccepted record for a combatant.
 
         Generates and saves the PrivacyAccepted record, then sends out the
@@ -61,6 +61,7 @@ class PrivacyAcceptance(app.db.Model):
 
         Attributes:
             combatant: A combatant
+            no_email: Should be used for unit testing only
 
         """
         privacy_acceptance = cls(combatant=combatant)

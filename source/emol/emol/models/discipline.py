@@ -2,10 +2,11 @@
 """Model for a discipline"""
 
 # standard library imports
-from datetime import date
+import json
 
 # third-party imports
 from flask import current_app as app
+from sqlalchemy.ext.hybrid import hybrid_property
 
 # application imports
 from .named_tuples import NameSlugTuple
@@ -112,9 +113,14 @@ class Discipline(app.db.Model):
     id = app.db.Column(app.db.Integer, primary_key=True)
     slug = app.db.Column(app.db.String(255), nullable=False)
     name = app.db.Column(app.db.String(255), nullable=False)
+    _reminders_at = app.db.Column(app.db.String(255))
 
     authorizations = app.db.relationship('Authorization')
     marshals = app.db.relationship('Marshal')
+
+    @hybrid_property
+    def reminders_at(self):
+        return json.loads(self._reminders_at)
 
     def __repr__(self):
         """String representation."""

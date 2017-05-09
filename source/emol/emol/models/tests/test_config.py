@@ -71,3 +71,11 @@ def test_config_list(app):
     assert isinstance(value, list)
     for v in l:
         assert v in value
+
+
+def test_waiver_reminders(app):
+    """Test for the waiver reminder times."""
+    reminders = Config.get('waiver_reminders')
+    assert len(reminders) == 2
+    assert 30 in reminders
+    assert 60 in reminders

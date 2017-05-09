@@ -2,7 +2,6 @@
 """Model an authorization card expiry date."""
 
 # standard library imports
-from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 
 # third-party imports
@@ -12,9 +11,10 @@ from flask_login import current_user
 # application imports
 from emol.mail import Emailer
 from emol.mail.email_templates import EMAIL_TEMPLATES
-from emol.utility.date import add_years, DATE_FORMAT, LOCAL_TZ
+from emol.utility.date import add_years, today, DATE_FORMAT, LOCAL_TZ
 
 from .authorization import Authorization
+from .config import Config
 from .marshal import Marshal
 
 __all__ = ['Card']
@@ -116,7 +116,7 @@ class Card(app.db.Model):
     @property
     def expiry_days(self):
         """Number of days until this card expires."""
-        return (self.expiry_date - date.today()).days
+        return (self.expiry_date - today()).days
 
     def add_authorization(self, authorization):
         """Add an authorization to this card.
@@ -223,17 +223,14 @@ class Card(app.db.Model):
         self.reminders.clear()
 
         # Update the card date
-        self.card_date = card_date or date.today()
-
-        today = datetime.now(LOCAL_TZ).date()
+        self.card_date = card_date or today()
 
         # Create the reminder for expiry day
-        # expiry = (today + relativedelta(years=cls.duration, days=0))
-        expiry_date = (today + relativedelta(days=3))
+        expiry_date = (self.card_date + relativedelta(years=2))
         CardReminder.schedule(self, expiry_date, is_expiry=True)
 
         # Reminders at the specified points before expiry day
-        for days in CardReminder.reminders:
+        for days in Config.get('waiver_reminders'):
             reminder_date = expiry_date - relativedelta(days=days)
             CardReminder.schedule(self, reminder_date, is_expiry=False)
 
@@ -258,10 +255,6 @@ class CardReminder(app.db.Model):
 
     is_expiry = app.db.Column(app.db.Boolean, nullable=False)
 
-    duration = 2
-    # reminders = [30, 60]
-    reminders = [2, 1]
-
     def mail(self):
         """Send reminder or expiry email as appropriate to this instance."""
         discipline = self.card.discipline
@@ -274,13 +267,12 @@ class CardReminder(app.db.Model):
         else:
             template = EMAIL_TEMPLATES.get('card_reminder')
             subject = template.get('subject')
-            print(self.card.expiry_days)
             body = template.get('body').format(
                 expiry_days=self.card.expiry_days,
                 expiry_date=self.card.expiry_date_str,
                 discipline=discipline.name
             )
-
+        print(Emailer)
         return Emailer().send_email(self.card.combatant.email, subject, body)
 
     @classmethod

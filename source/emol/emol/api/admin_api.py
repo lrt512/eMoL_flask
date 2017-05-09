@@ -220,8 +220,11 @@ class SetupApi(Resource):
 
             new_discipline = Discipline(
                 name=discipline.get('name'),
-                slug=discipline.get('slug')
+                slug=discipline.get('slug'),
+                _reminders_at=json.dumps(discipline.get('reminders_at'))
             )
+
+
             current_app.db.session.add(new_discipline)
 
             for slug, name in discipline.get('authorizations').items():
@@ -240,6 +243,7 @@ class SetupApi(Resource):
                 )
                 current_app.db.session.add(marshal)
 
+        Config.set('waiver_reminders', data.get('waiver_reminders'))
         Config.set('is_setup', True)
         current_app.db.session.commit()
 

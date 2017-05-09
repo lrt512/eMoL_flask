@@ -7,19 +7,20 @@ import flask_login
 # to the config file
 os.environ['EMOL_CONFIG'] = '/home/vagrant/source/config/test/config.py'
 
-SETUP_JSON = """{"encryption_key":"0123456789012345","global_waiver_date":true,"global_card_date":false,
-"admin_emails":["ealdormere.emol@gmail.com"],
-"disciplines":[{"name":"Rapier","slug":"rapier","authorizations":{"heavy-rapier":"Heavy Rapier",
-"cut-thrust":"Cut & Thrust","two-weapon":"Two Weapon","parry-device":"Parry Device"},"marshals":{"marshal":"Marshal"}},
-{"name":"Armoured Combat","slug":"armoured-combat","authorizations":{"weapon-shield":"Weapon & Shield",
-"great-weapon":"Great Weapon","two-weapon":"Two Weapon","siege":"Siege"},"marshals":{"marshal":"Marshal"}}]}"""
+SETUP_JSON = """{"encryption_key":"0123456789012345", "admin_emails":["ealdormere.emol@gmail.com"], "waiver_reminders":
+[30, 60], "disciplines":[{"name":"Rapier","slug":"rapier","authorizations":{"heavy-rapier":"Heavy Rapier",
+"cut-thrust":"Cut & Thrust","two-weapon":"Two Weapon","parry-device":"Parry Device"},"marshals":{"marshal":"Marshal"},
+"reminders_at": [30, 60]}, {"name":"Armoured Combat","slug":"armoured-combat","authorizations":{"weapon-shield":
+"Weapon & Shield", "great-weapon":"Great Weapon","two-weapon":"Two Weapon","siege":"Siege"},"marshals":{"marshal":
+"Marshal"}, "reminders_at": [30, 60]}]}"""
 
 from emol.app import create_app
 the_app = create_app()
 from emol.api.admin_api import SetupApi
 SetupApi.test_setup(SETUP_JSON)
 
-from emol.models import Combatant
+from emol.models import Combatant, User
+from emol.utility.testing import Mockmail
 
 @pytest.fixture(scope='session')
 def app():
@@ -33,7 +34,6 @@ def app():
 @pytest.fixture(scope='module')
 def admin_user(app):
     """Log in the admin user"""
-    from emol.models import User
     user = User.query.filter(User.email == 'ealdormere.emol@gmail.com').one()
     flask_login.login_user(user)
 
@@ -42,7 +42,6 @@ def admin_user(app):
 
 @pytest.fixture(scope='session')
 def unprivileged_user(app):
-    from emol.models import User
     user = User(email='u_user@ealdormere.ca', system_admin=False)
     flask_login.login_user(user)
 
@@ -82,7 +81,7 @@ def privileged_user(app, admin_user, unprivileged_user, request):
 
 @pytest.fixture
 def combatant_data():
-    COMBATANT_DATA = dict(
+    return dict(
         legal_name='Fred McFred',
         sca_name='Fred Fredsson',
         original_email='mcfred@mailinator.com',
@@ -96,19 +95,19 @@ def combatant_data():
         waiver_date='2015-01-01'
     )
 
-    yield COMBATANT_DATA
-
-@pytest.fixture
+@pytest.fixture(scope='function')
 @pytest.mark.parametrize(
     'privileged_user',
     [{ None: ['edit_combatant_info', 'edit_waiver_date'], 'rapier': ['edit_authorizations']}],
     indirect=True
 )
 def combatant(app, combatant_data):
-    print(Combatant.query.all())
-    c = Combatant.create(combatant_data)
+    print('combatant')
+    # Fixture wants no email sent, with no check for sent/not-sent
+    with Mockmail('emol.models.privacy_acceptance', None):
+        c = Combatant.create(combatant_data)
 
     yield c
 
     app.db.session.delete(c)
-    app.db.session.flush()
+    app.db.session.commit()

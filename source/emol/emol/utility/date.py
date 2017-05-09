@@ -14,6 +14,15 @@ DATE_FORMAT = '%Y-%m-%d'
 LOCAL_TZ = pytz.timezone("America/Toronto")
 
 
+def today():
+    """Proxy date.today to facilitate unit testing.
+
+    See testing.Mocktoday for details.
+
+    """
+    return datetime.now(LOCAL_TZ).date()
+
+
 def string_to_date(date_str):
     """Convert a string date to a datetime.
 

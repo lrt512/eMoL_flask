@@ -4,6 +4,7 @@ from werkzeug.exceptions import Unauthorized
 
 from emol.exception.privacy_acceptance import PrivacyPolicyNotAccepted
 from emol.models import Combatant, Card, PrivacyAcceptance
+from emol.utility.testing import Mockmail
 
 
 @pytest.mark.parametrize(
@@ -42,7 +43,9 @@ def test_privacy_declined(app, privileged_user, combatant):
 )
 def test_privacy_accepted(app, privileged_user, combatant):
     """Test accepted privacy policy."""
-    resolution = combatant.privacy_acceptance.resolve(True)
+    with Mockmail('emol.models.privacy_acceptance', True):
+        resolution = combatant.privacy_acceptance.resolve(True)
+
     assert combatant.card_url is not None
     assert resolution.get('card_url') == combatant.card_url
     assert resolution.get('accepted') is True

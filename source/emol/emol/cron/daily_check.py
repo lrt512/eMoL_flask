@@ -13,7 +13,7 @@ from flask import current_app
 
 # application imports
 from emol.models import CardReminder, WaiverReminder
-from emol.utility.date import LOCAL_TZ
+from emol.utility.date import today
 
 
 def daily_check():
@@ -27,16 +27,18 @@ def daily_check():
     """
     current_app.logger.info('Daily check initiated')
 
-    today = datetime.now(LOCAL_TZ).date()
-    reminders = CardReminder.query.filter(CardReminder.reminder_date <= today).all()
+    this_day = today()
+    reminders = CardReminder.query.filter(CardReminder.reminder_date <= this_day).all()
     for reminder in reminders:
+        current_app.logger.debug('Mail {0}'.format(reminder))
         reminder.mail()
-        current_app.db.session.remove(reminder)
+        current_app.db.session.delete(reminder)
 
-    reminders = WaiverReminder.query.filter(WaiverReminder.reminder_date <= today).all()
+    reminders = WaiverReminder.query.filter(WaiverReminder.reminder_date <= this_day).all()
     for reminder in reminders:
+        current_app.logger.debug('Mail {0}'.format(reminder))
         reminder.mail()
-        current_app.db.session.remove(reminder)
+        current_app.db.session.delete(reminder)
 
     current_app.db.session.commit()
 
