@@ -16,8 +16,6 @@ from collections import namedtuple
 from flask import url_for, current_app as app
 from flask_login import current_user
 from slugify import slugify
-from sqlalchemy.orm.exc import NoResultFound
-from werkzeug.exceptions import Unauthorized
 
 # application imports
 from emol.decorators import role_required
@@ -434,8 +432,9 @@ class Combatant(app.db.Model):
         original_email = self.email
 
         # Do the updates
-        for field in self._combatant_info:
-            value = data.get(field)
+        for field, value in data.items():
+            if field not in self._combatant_info:
+                continue
 
             # Special cases
             if not is_blank(value):

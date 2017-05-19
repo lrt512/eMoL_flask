@@ -79,6 +79,5 @@ def update_info(token):
             'combatant/combatant_update_info.html',
             combatant=update_request.combatant,
             token=token,
-            validation_token=Sha256.generate_hash(token),
             is_self_serve=True
         )

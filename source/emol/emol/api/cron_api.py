@@ -54,11 +54,14 @@ class CronApi(Resource):
 
         # Wrong cron token
         if current_app.cron_helper.check_cron_token(cron_token) is False:
-            abort(403)
+            abort(401)
 
         if task_name == 'daily_check':
             # Daily check for expiry reminders
             daily_check()
+        elif task_name == 'unit_test':
+            # For unit testing, NOP and get a new cron token
+            pass
         else:
             # Invalid task name
             abort(403)

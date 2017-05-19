@@ -1,3 +1,5 @@
+"""Unit tests for Combatant API."""
+
 import json
 import pytest
 
@@ -10,7 +12,7 @@ def test_create_anonymous(app, combatant_data):
 
 
 def test_create_admin(app, admin_user, login_client, combatant_data):
-    """Test create user vi API as admin."""
+    """Test create and delete user vi API as admin."""
     response = login_client.post(
         '/api/combatant',
         data=json.dumps(combatant_data),

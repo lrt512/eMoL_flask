@@ -14,6 +14,7 @@ from emol.models import Combatant, Discipline
 from emol.utility.value_tools import yes_or_no
 from emol.utility.date import add_years, string_to_date
 
+
 @current_app.api.route('/api/import')
 class ImportApi(Resource):
     """Endpoint for combatant import.

@@ -29,6 +29,11 @@ class CronHelper(object):
         self.__token_filename = app.config.get('CRON_TOKEN')
         current_app.logger.debug('cron_token in {0}'.format(app.config.get('CRON_TOKEN')))
 
+    def get_cron_token(self):
+        """Read the current cron token."""
+        with open(self.__token_filename, 'r') as file_handle:
+            return file_handle.read()
+
     def new_cron_token(self):
         """Create a new cron access token.
 
@@ -57,12 +62,12 @@ class CronHelper(object):
 
         Returns:
             True if the token matches
+
         """
         # TODO: handle exceptions
-        with open(self.__token_filename, 'r') as file_handle:
-            cron_token = file_handle.read()
-            current_app.logger.debug(
-                'cron token in: {0} vs real cron token {1}'
-                    .format(token, cron_token)
-            )
-            return cron_token == token
+        cron_token = self.get_cron_token()
+        current_app.logger.debug(
+            'cron token in: {0} vs real cron token {1}'
+                .format(token, cron_token)
+        )
+        return cron_token == token

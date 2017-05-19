@@ -54,7 +54,6 @@ from flask_restful import Resource
 from emol.exception.combatant import CombatantDoesNotExist
 from emol.models import UpdateRequest
 from emol.models.faux_user import FauxUserSwitch
-from emol.utility.hash import Sha256
 
 
 @current_app.api.route('/api/combatant_update')
@@ -83,16 +82,13 @@ class CombatantUpdateApi(Resource):
 
         token = request.json.get('token')
         validate_token = request.json.get('validation_token')
+
         update_request = UpdateRequest.query.filter(
-            UpdateRequest.token == token).one()
+            UpdateRequest.token == token).one_or_none()
 
-        if update_request.valid is False:
+        if update_request is None or update_request.valid is False:
             messages.append('Unauthorized')
-            return {'messages': messages}
-
-        if Sha256.validate_hash(update_request.token, validate_token) is False:
-            messages.append('Unauthorized')
-            return {'messages': messages}
+            return {'messages': messages}, 401
 
         try:
             # Update combatant info and re-encrypt personal info for save
@@ -123,10 +119,10 @@ class CombatantUpdateApi(Resource):
                     )
                 )
 
+                return {'messages': messages}, 200
         except CombatantDoesNotExist:
             current_app.logger.exception(
                 'Put for combatant update, but combatant somehow does not exist'
             )
-            messages.append('Combatant does not exist, somehow')
-
-        return {'messages': messages}
+            messages.append('Combatant does not exist, somehow'), 400
+            return {'messages': messages}
