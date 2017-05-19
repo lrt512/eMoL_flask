@@ -52,7 +52,6 @@ class Mocktoday(object):
         self.module.today = self.orig
 
 
-
 class Mockmail(object):
     """A context manager for mail.Emailer unit testing.
 
@@ -119,6 +118,9 @@ class Mockmail(object):
 
             @classmethod
             def send_card_request(cls, combatant):
+                # This is the important part of the method, maybe results
+                # in a PrivacyPolicyNotAccepted
+                card_url = combatant.card_url
                 self.mocked = True
 
             @classmethod

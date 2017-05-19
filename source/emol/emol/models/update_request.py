@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 from flask import url_for, current_app as app
 
 # application imports
+from emol.exception.privacy_acceptance import PrivacyPolicyNotAccepted
 from emol.utility.database import default_uuid
 
 __all__ = ['CombatantInfoUpdateRequest']
@@ -54,7 +55,14 @@ class UpdateRequest(app.db.Model):
         Args:
             combatant: A combatant
 
+        Raises:
+            PrivacyPolicyNotAccepted if combatant has not accepted
+            the privacy policy
+
         """
+        if combatant.accepted_privacy_policy is False:
+            raise PrivacyPolicyNotAccepted
+
         super().__init__(
             combatant=combatant,
             expiry=datetime.utcnow() + timedelta(days=1)

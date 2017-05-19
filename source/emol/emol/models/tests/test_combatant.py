@@ -21,6 +21,7 @@ def test_create_admin(app, combatant_data, admin_user):
     assert combatant is not None
 
     app.db.session.delete(combatant)
+    app.db.session.commit()
 
 
 def test_create_unprivileged(app, combatant_data, unprivileged_user):
@@ -42,5 +43,6 @@ def test_create_authorized(app, combatant_data, privileged_user):
     assert combatant is not None
 
     app.db.session.delete(combatant)
+    app.db.session.commit()
 
 

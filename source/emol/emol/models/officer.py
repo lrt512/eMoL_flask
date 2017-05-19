@@ -5,6 +5,7 @@
 
 # third-party imports
 from flask import current_app as app
+from sqlalchemy import inspect
 
 # application imports
 from .discipline import Discipline
@@ -64,7 +65,7 @@ class Officer(app.db.Model):
     parent_id = app.db.Column(app.db.Integer, app.db.ForeignKey('officer.id'))
     parent = app.db.relationship('Officer', backref='children', remote_side=[id])
 
-    allowed_empty = ['discipline', 'parent']
+    allowed_empty = ['discipline_id', 'parent_id', 'address2', 'note']
 
     @classmethod
     def create_or_update(cls, data):
@@ -79,22 +80,25 @@ class Officer(app.db.Model):
             officer = Officer()
             app.db.session.add(officer)
 
-        # Yeah, that's a protected member.
-        # pylint: disable=protected-access
-        for column in officer._columns_without_pk_:
-            if data.get(column) is None:
-                if column in cls.allowed_empty:
+        for column in inspect(Officer).columns:
+            key = column.key
+            if key == 'id':
+                continue
+
+            value = data.get(column.key)
+
+            if value is None:
+                if key in cls.allowed_empty:
                     continue
 
                 raise Exception(column)
 
-            value = data.get(column)
-            if column == 'discipline':
+            if key == 'discipline':
                 if len(value) == 0:
                     officer.discipline = None
                 else:
-                    officer.discipline = Discipline.query.filter(Discipline.slug == value).one()
-            elif column == 'parent':
+                    officer.discipline = Discipline.find(value)
+            elif key == 'parent':
                 if len(value) == 0:
                     officer.parent = None
                 else:
@@ -102,6 +106,7 @@ class Officer(app.db.Model):
                     if parent != officer:
                         officer.parent = parent
             else:
-                setattr(officer, column, data.get(column))
+                setattr(officer, key, value)
 
         app.db.session.commit()
+        return officer

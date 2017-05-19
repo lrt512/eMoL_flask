@@ -5,7 +5,7 @@
 from functools import wraps
 
 # third-party imports
-from flask import redirect, url_for, abort
+from flask import redirect, url_for, abort, _request_ctx_stack, session
 from flask_login import current_user
 
 # application imports
@@ -26,6 +26,10 @@ def login_required(handler_method):
     def check_login(*args, **kwargs):
         """Perform the check."""
         if current_user.is_anonymous:
+            # Short-circuit anonymous API invocations
+            if 'emol.api' in args[0].__module__:
+                abort(401)
+
             return redirect(url_for('home.login'))
 
         return handler_method(*args, **kwargs)

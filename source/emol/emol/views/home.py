@@ -99,31 +99,26 @@ def request_card():
         return render_template('home/request_card.html')
     elif request.method == 'POST':
         email = request.form['request-card-email']
-        combatant = Combatant.get_by_email(email)
         msg = None
-
-        if combatant is None:
-            msg = 'No combatant found with email "{0}'.format(email)
-
-        if combatant is not None:
-            try:
-                mailer = Emailer()
-                success = mailer.send_card_request(combatant)
-                if success is True:
-                    msg = (
-                        'An email has been sent with instructions '
-                        'for retrieving your card'
-                    )
-                else:
-                    msg = 'An error occurred, please contact the MoL'
-            except PrivacyPolicyNotAccepted as exc:
-                current_app.logger.error(
-                    'Card request for {0} (privacy not accepted)'
+        try:
+            combatant = Combatant.get_by_email(email)
+            mailer = Emailer()
+            mailer.send_card_request(combatant)
+            msg = (
+                'An email has been sent with instructions '
+                'for retrieving your card'
+            )
+        except CombatantDoesNotExist:
+            msg ='No combatant found with email "{0}'.format(email)
+        except PrivacyPolicyNotAccepted as exc:
+            current_app.logger.error(
+                'Card request for {0} (privacy not accepted)'
                     .format(combatant.email)
-                )
-                msg = str(exc)
+            )
+            msg = str(exc)
 
         return render_template('message/message.html', message=msg)
+
     else:
         abort(405)
 
@@ -134,7 +129,7 @@ def update_info():
     if request.method == 'GET':
         return render_template('home/update_info.html')
     elif request.method == 'POST':
-        email = request.form['request-card-email']
+        email = request.form['update-info-email']
         try:
             combatant = Combatant.get_by_email(email)
             update_request = UpdateRequest(combatant=combatant)
@@ -143,21 +138,21 @@ def update_info():
 
             # Mail it
             mailer = Emailer()
-            success = mailer.send_info_update(combatant, update_request)
-            if success is True:
-                msg = (
-                    'An email has been sent with instructions for '
-                    'updating your information'
-                )
-            else:
-                msg = 'An error occurred, please contact the MoL'
-
-            return render_template('message/message.html', message=msg)
-        except CombatantDoesNotExist:
-            return render_template(
-                'message/message.html',
-                message='No combatant was found with email {0}'.format(email)
+            mailer.send_info_update(combatant, update_request)
+            msg = (
+                'An email has been sent with instructions for '
+                'updating your information'
             )
+        except CombatantDoesNotExist:
+            msg='No combatant found with email {0}'.format(email)
+        except PrivacyPolicyNotAccepted as exc:
+            current_app.logger.error(
+                'Card request for {0} (privacy not accepted)'
+                    .format(combatant.email)
+            )
+            msg = str(exc)
+
+        return render_template('message/message.html', message=msg)
     else:
         abort(405)
 

@@ -1,6 +1,7 @@
 import os
 import pytest
 
+from flask import _request_ctx_stack
 import flask_login
 
 # the app won't initialize without an environment variable pointing
@@ -22,6 +23,7 @@ SetupApi.test_setup(SETUP_JSON)
 from emol.models import Combatant, User
 from emol.utility.testing import Mockmail
 
+
 @pytest.fixture(scope='session')
 def app():
     """Flask-thing requires an 'app' fixture on everything."""
@@ -40,15 +42,21 @@ def admin_user(app):
     yield user
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def unprivileged_user(app):
+    """An unprivileged user."""
     user = User(email='u_user@ealdormere.ca', system_admin=False)
+    app.db.session.add(user)
+    app.db.session.commit()
     flask_login.login_user(user)
 
     yield user
 
+    app.db.session.delete(user)
+    app.db.session.commit()
 
-@pytest.fixture(scope='function', params=['roles'])
+
+@pytest.fixture(params=['roles'])
 def privileged_user(app, admin_user, unprivileged_user, request):
     """Log in a user and assign the given roles.
 
@@ -70,6 +78,7 @@ def privileged_user(app, admin_user, unprivileged_user, request):
     # Log in now-privileged user for the test
     flask_login.logout_user()
     flask_login.login_user(unprivileged_user)
+    app.db.session.commit()
 
     yield unprivileged_user
 
@@ -128,3 +137,15 @@ def combatant(app, combatant_data, fixture_user):
 
     app.db.session.delete(c)
     app.db.session.commit()
+
+
+@pytest.fixture
+def login_client(app):
+    """Test client with the user pulled by the calling test logged in."""
+    user = getattr(_request_ctx_stack.top, 'user', None)
+    assert user is not None
+
+    with app.test_client() as c:
+        c.post('/api/test-login/{0.id}'.format(user))
+
+        yield c

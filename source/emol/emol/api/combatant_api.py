@@ -22,7 +22,7 @@ from emol.decorators import login_required
 from emol.models import Combatant
 
 
-@current_app.api.route('/api/combatant/<string:uuid>')
+@current_app.api.route('/api/combatant/<string:uuid>', '/api/combatant')
 class CombatantApi(Resource):
     """Endpoint for combatant creation and updates.
 
@@ -44,8 +44,9 @@ class CombatantApi(Resource):
             400 if any error occurred
 
         """
+        print(request.json)
         combatant = Combatant.create(request.json)
-        return {'uuid': combatant.uuid}
+        return {'uuid': combatant.uuid}, 200
 
     @classmethod
     @login_required
@@ -214,3 +215,31 @@ class CombatantListDataTable(Resource):
             ) for c in Combatant.query.all()
         ]}
         return jsonify(combatants)
+
+
+@current_app.api.route('/api/test-login/<string:user>')
+class TestLoginApi(Resource):
+    """
+
+    Permitted methods: POST
+
+    """
+
+    @classmethod
+    def post(cls, user):
+        """Create a new combatant.
+
+        Delegates incoming combatant data to the Combatant model class
+
+        See Combatant.create_or_update for the JSON object specification
+
+        Returns:
+            200 if all is well
+            400 if any error occurred
+
+        """
+        from flask_login import login_user
+        from emol.models import User
+
+        user = User.query.filter(User.id == user).one()
+        login_user(user)
