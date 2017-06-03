@@ -7,6 +7,8 @@ sudo rm /var/lib/apt/lists/lock
 sudo rm /var/cache/apt/archives/lock
 sudo rm /var/lib/dpkg/lock
 
+
+sudo add-apt-repository ppa:jonathonf/python-3.6
 sudo apt-get update
 
 # MySQL with super secret passwords
@@ -18,13 +20,13 @@ sudo debconf-set-selections <<< "mysql-server mysql-server/root_password_again p
 sudo apt-get install -y mysql-server libmysqlclient-dev
 
 # all other packages
-sudo apt-get install -y build-essential python3.4-venv python3.4-dev ruby2.0 ruby2.0-dev apache2 libsqlite3-dev supervisor libapache2-mod-fcgid
+sudo apt-get install -y build-essential python3.6 python3.6-venv python3.6-dev ruby ruby-dev libsqlite3-dev supervisor libssl-dev libffi-dev python-dev
 
 # set system timezone to match Ealdormere
 sudo timedatectl set-timezone America/Toronto
 
 # mailcatcher
-[ "$(type -p mailcatcher)" ] || sudo gem2.0 install mailcatcher
+[ "$(type -p mailcatcher)" ] || sudo gem install mailcatcher
 
 # cp /etc files
 sudo rsync -rltpv /vagrant/provision/files/etc/ /etc
@@ -37,7 +39,3 @@ ln -s -f /vagrant/provision/files/dotfiles/.??* .
 
 # restart supervisor to fire up mailcatcher
 sudo supervisorctl reload
-
-# enable mod_rewrite
-sudo a2enmod rewrite
-sudo service apache2 restart

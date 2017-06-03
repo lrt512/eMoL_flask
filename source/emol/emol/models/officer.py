@@ -53,7 +53,7 @@ class Officer(app.db.Model):
     address1 = app.db.Column(app.db.String(255))
     address2 = app.db.Column(app.db.String(255))
     city = app.db.Column(app.db.String(255))
-    state = app.db.Column(app.db.String(2))
+    province = app.db.Column(app.db.String(2))
     postal_code = app.db.Column(app.db.String(10))
     phone = app.db.Column(app.db.String(10))
 
@@ -91,22 +91,24 @@ class Officer(app.db.Model):
                 if key in cls.allowed_empty:
                     continue
 
-                raise Exception(column)
-
-            if key == 'discipline':
-                if len(value) == 0:
-                    officer.discipline = None
-                else:
-                    officer.discipline = Discipline.find(value)
-            elif key == 'parent':
-                if len(value) == 0:
-                    officer.parent = None
-                else:
-                    parent = Officer.query.filter(Officer.short_title == value).one_or_none()
-                    if parent != officer:
-                        officer.parent = parent
+                raise Exception("{} may not be empty".format(column))
             else:
                 setattr(officer, key, value)
+
+        slug = data.get('discipline')
+        if not slug:
+            officer.discipline = None
+        else:
+            discipline = Discipline.find(slug)
+            officer.discipline_id = discipline.id
+
+        parent_title = data.get('parent')
+        if not parent_title:
+            officer.parent = None
+        else:
+            parent = Officer.query.filter(Officer.short_title == parent_title).one_or_none()
+            if parent != officer:
+                officer.parent = parent
 
         app.db.session.commit()
         return officer

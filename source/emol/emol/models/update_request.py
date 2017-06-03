@@ -88,7 +88,7 @@ class UpdateRequest(app.db.Model):
         """
         date = datetime.utcnow() + timedelta(days=-days)
         old_requests = cls.query.filter(cls.expiry > date).all()
-        old_requests.delete()
+        app.db.session.delete(old_requests)
 
     @property
     def change_info_url(self):

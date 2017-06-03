@@ -118,10 +118,12 @@ class UserApi(Resource):
 
         # Roles the user already has
         current_roles = user.roles_for(discipline)
-
+        print(discipline, current_roles, assigned_roles)
         # Roles to be removed
         for current_role in current_roles:
+            print(current_role, current_role in assigned_roles)
             if current_role not in assigned_roles:
+                print('delete', current_role)
                 delete.append(current_role)
 
         # Roles to be added

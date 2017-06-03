@@ -208,7 +208,7 @@ class User(app.db.Model):
         discipline_roles = self.role_objects_for(discipline)
         for user_role in discipline_roles:
             if user_role.role.slug == role:
-                user_role.delete()
+                app.db.session.delete(user_role)
                 break
 
         app.db.session.commit()

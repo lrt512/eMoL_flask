@@ -54,7 +54,7 @@ def get(officer_id):
         'officer/officer_detail.html',
         officer=officer,
         disciplines=[d for d in Discipline.query.all()
-                     if d not in officer.children],
+                     if officer is None or d not in officer.children],
         discipline_slug=(officer.discipline.slug
                          if officer and officer.discipline else None),
         parent_slug=(officer.parent.short_title

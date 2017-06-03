@@ -19,7 +19,7 @@ $(document).ready(function ()
         {
             return;
         }
-
+        console.info($(userDetailFormSelector).serialize())
         $.ajax({
             url: '/api/user',
             method: method,

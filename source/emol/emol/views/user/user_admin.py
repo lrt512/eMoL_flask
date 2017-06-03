@@ -45,7 +45,5 @@ def get(user_id):
         'user/user_detail.html',
         user=user,
         roles=Role.query.all(),
-        disciplines=Discipline.query.all(),
-        global_card_date=Role.is_global_card_date(),
-        global_waiver_date=Role.is_global_waiver_date()
+        disciplines=Discipline.query.all()
     )

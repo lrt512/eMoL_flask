@@ -148,22 +148,11 @@ class SetupApi(Resource):
         # Roles from the role definitions in roles.py
         for role in Role.USER_ROLES:
             slug = role.get('slug')
-            is_global = False
-
-            if slug == 'edit_waiver_date' and global_waiver_date is True:
-                # Set edit_waiver_date as global_waiver_date indicates
-                is_global = True
-            elif slug == 'edit_card_date' and global_card_date is True:
-                # Set edit_card_date as global_card_date indicates
-                is_global = True
-            elif slug in Role.GLOBAL_ROLES:
-                # Other roles that are always global
-                is_global = True
 
             role = Role(
                 name=role.get('name'),
                 slug=role.get('slug'),
-                is_global=is_global
+                is_global=True if slug in Role.GLOBAL_ROLES else False
             )
             current_app.db.session.add(role)
 

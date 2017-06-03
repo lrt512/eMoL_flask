@@ -8,7 +8,7 @@
 
 # create python virtualenv
 if [ ! -d "~/env" ]; then
-    pyvenv-3.4 ~/env
+    pyvenv-3.6 ~/env
 fi
 
 # symlink scripts directory to ~/bin
@@ -21,7 +21,7 @@ source ~/env/bin/activate
 
 # install webapp developer dependencies
 cd ~/source/emol
-pip install -r requirements.txt
+pip install -r req-development.txt
 
 # prepare the keyfile directory for eMoL setup
 if [ ! -d "/home/vagrant/.key" ]; then
@@ -29,9 +29,5 @@ if [ ! -d "/home/vagrant/.key" ]; then
     chmod 0700 /home/vagrant/.key
 fi
 
-sudo ln -s ~/source/emol /var/www
-sudo ln -s ~/source/config/vagrant/index.fcgi /var/www
-sudo ln -s ~/source/config/vagrant/.htaccess /var/www
-
 export EMOL_CONFIG=/home/vagrant/source/config/vagrant/config.py
-~/bin/bootstrap-db
+~/source/emol/bootstrap-db.py

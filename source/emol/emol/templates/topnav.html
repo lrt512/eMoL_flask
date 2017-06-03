@@ -19,7 +19,7 @@
                             <span class="collapsed">User List</span>
                         </a></li>
                     {% endif %}
-                    {% if current_user.has_role(None, 'can_edit_officers') %}
+                    {% if current_user.has_role(None, 'edit_officer_info') %}
                         <li><a href="/officer-list" title="Kingdom Officers">
                             <i class="fa fa-user-circle-o fa-1-5x" aria-hidden="true"></i>
                             <span class="collapsed">Officer List</span>
@@ -83,7 +83,7 @@
                             {% if current_user is defined and current_user.is_admin %}
                                 <li><a href="/user-list"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;User List</a></li>
                             {% endif %}
-                            {% if current_user is defined and current_user.has_role(None, 'can_edit_officers') %}
+                            {% if current_user is defined and current_user.has_role(None, 'edit_officer_info') %}
                                 <li><a href="/officer-list"><i class="fa fa-user-circle-o" aria-hidden="true"></i>&nbsp;Kingdom Officers</a></li>
                             {% endif %}
                             {% if current_user is defined and current_user.can_see_combatant_list %}

@@ -39,7 +39,7 @@ class Role(app.db.Model):
         {'name': 'Can edit marshal status', 'slug': 'edit_marshal'},
         {'name': 'Can generate warrant roster', 'slug': 'warrant_roster'},
         {'name': 'Can import combatants', 'slug': 'can_import'},
-        {'name': 'Can edit kingdom officers', 'slug': 'can_edit_officers'}
+        {'name': 'Can edit kingdom officers', 'slug': 'edit_officer_info'}
     ]
 
     # Roles associated with editing combatants.
@@ -47,17 +47,13 @@ class Role(app.db.Model):
     COMBATANT_EDIT_ROLES = (
         'view_combatant_info',
         'edit_combatant_info',
-        'edit_waiver_date',
         'edit_card_date',
         'edit_authorizations',
         'edit_marshal'
     )
 
-    # Roles that may or may not be global
-    MAYBE_GLOBAL_ROLES = ['edit_waiver_date', 'edit_card_date']
-
     # These roles are always global
-    GLOBAL_ROLES = ['view_combatant_info', 'edit_combatant_info']
+    GLOBAL_ROLES = ['view_combatant_info', 'edit_combatant_info', 'edit_waiver_date']
 
     id = app.db.Column(app.db.Integer, primary_key=True)
     slug = app.db.Column(app.db.String(255), nullable=False)

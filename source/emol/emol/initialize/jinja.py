@@ -15,6 +15,7 @@ from flask_login import current_user
 def init_jinja():
     """Register custom functions and filters with Jinja."""
     current_app.logger.info('Initialize Jinja')
+
     def check_authorization(auths, authorization):
         """Check if a combatant has an authorization.
 
@@ -41,7 +42,7 @@ def init_jinja():
 
         return auths.get(authorization)
 
-    def check_role(discipline, role):
+    def check_role(discipline, role, user=None):
         """Check if the current user has a role.
 
         Proxy User.has_role so that Jinja can return the selected property
@@ -50,18 +51,20 @@ def init_jinja():
         Args:
             discipline: The discipline to check against (or 'global')
             role: The role to check for
+            user: The user to check for, or current_user if None
 
         Returns:
             Boolean
 
         """
-        if current_user is None:
+        user = user or current_user
+        if user is None:
             return False
 
         if isinstance(role, tuple):
-            return current_user.has_role_or(discipline, role)
+            return user.has_role_or(discipline, role)
         else:
-            return current_user.has_role(discipline, role)
+            return user.has_role(discipline, role)
 
     jinja_globals = current_app.jinja_env.globals
 
@@ -106,20 +109,20 @@ def init_jinja():
     jinja_globals['has_role'] = check_role
 
     # Return HTML attribute selected of the user has the role.
-    jinja_globals['has_role_select'] = lambda discipline, role: \
-        'selected' if check_role(discipline, role) else ''
+    jinja_globals['has_role_select'] = lambda discipline, role, user=None: \
+        'selected' if check_role(discipline, role, user) else ''
 
     # Return HTML attribute readonly of the user does not have the role
-    jinja_globals['has_role_readonly'] = lambda discipline, role: \
-        '' if check_role(discipline, role) else 'readonly'
+    jinja_globals['has_role_readonly'] = lambda discipline, role, user=None: \
+        '' if check_role(discipline, role, user) else 'readonly'
 
     # Return HTML attribute disabled of the user does not have the role
-    jinja_globals['has_role_disabled'] = lambda discipline, role: \
-        '' if check_role(discipline, role) else 'disabled'
+    jinja_globals['has_role_disabled'] = lambda discipline, role, user=None: \
+        '' if check_role(discipline, role, user) else 'disabled'
 
     # Return jQuery validate attribute required of the has the role
-    jinja_globals['has_role_required'] = lambda discipline, role: \
-        'required' if check_role(discipline, role) else ''
+    jinja_globals['has_role_required'] = lambda discipline, role, user=None: \
+        'required' if check_role(discipline, role, user) else ''
 
     # format a phone number 1234567890 as (123) 456-7890
     jinja_globals['phone'] = lambda x: '(%s) %s-%s' % (x[:3], x[3:6], x[-4:])

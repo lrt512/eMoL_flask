@@ -31,7 +31,7 @@ class OfficerApi(Resource):
     """
 
     @classmethod
-    @role_required('can_edit_officer')
+    @role_required('edit_officer_info')
     def post(cls):
         """Create a new officer.
 
@@ -51,7 +51,7 @@ class OfficerApi(Resource):
             return {'message': str(exc)}, 400
 
     @classmethod
-    @role_required('can_edit_officer')
+    @role_required('edit_officer_info')
     def put(cls):
         """Update an existing officer.
 
@@ -78,7 +78,7 @@ class OfficerListDataTable(Resource):
     """
 
     @classmethod
-    @role_required('can_edit_officer')
+    @role_required('edit_officer_info')
     def get(cls):
         """Retrieve officer data for DataTables.
 

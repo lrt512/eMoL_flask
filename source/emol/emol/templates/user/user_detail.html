@@ -32,7 +32,7 @@
                                     <select class="picklist" multiple="multiple" name="global">
                                             {% for role in roles %}
                                                 {% if role.is_global == True %}
-                                                    <option value="{{ role.slug }}" {{ has_role_select(None, role.slug) }}>
+                                                    <option value="{{ role.slug }}" {{ has_role_select(None, role.slug, user) }}>
                                                         {{ role.name }}
                                                     </option>
                                                 {% endif %}
@@ -55,7 +55,7 @@
                                         <select class="picklist" multiple="multiple" name="{{ discipline.slug }}">
                                             {% for role in roles %}
                                                 {% if role.is_global == False %}
-                                                    <option value="{{ role.slug }}" {{ has_role_select(discipline.slug, role.slug) }}>
+                                                    <option value="{{ role.slug }}" {{ has_role_select(discipline.slug, role.slug, user) }}>
                                                         {{ role.name }}
                                                     </option>
                                                 {% endif %}
