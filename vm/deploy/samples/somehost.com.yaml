@@ -1,0 +1,15 @@
+server:
+  hostname: somehost.com
+  mailcatcher: true
+  user: user
+
+deploy:
+  directory: public_html
+  fcgi: true
+
+database:
+  user: user
+  password: password
+  database: emol
+
+keyfile: somehost.com.key

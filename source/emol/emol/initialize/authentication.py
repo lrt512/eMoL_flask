@@ -18,6 +18,9 @@ def init_authentication():
 
     see http://peterhudec.com/authomatic/
 
+    See comments for login() in views/home.py for detail about oauth with
+    Google accounts for users.
+
     """
     current_app.logger.info('Initialize authentication')
     current_app.authomatic = Authomatic(

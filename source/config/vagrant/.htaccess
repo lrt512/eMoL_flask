@@ -1,6 +1,0 @@
-AddHandler fcgid-script .fcgi
-RewriteEngine On
-#RewriteBase /var/www/emol
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteRule ^(.*)$ /index.fcgi?/$1 [L]
-

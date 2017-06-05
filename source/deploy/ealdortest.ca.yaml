@@ -1,6 +1,0 @@
-server:
-  hostname: ealdortest.ca
-  mailcatcher: true
-
-app:
-  app-user: emol

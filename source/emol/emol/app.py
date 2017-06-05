@@ -6,6 +6,7 @@ Various housekeeping tasks to get the app set up. Commentary inline.
 """
 
 # standard library imports
+import os
 
 # third-party imports
 from flask import Flask
@@ -14,7 +15,12 @@ from flask import Flask
 def create_app():
     # Instantiate the app and configure from config.py
     app = Flask(__name__)
-    app.config.from_envvar('EMOL_CONFIG')
+    try:
+        print('Try config from local config.py')
+        app.config.from_object('emol.config')
+    except RuntimeError:
+        print('No local config.py, try EMOL_CONFIG environment variable')
+        app.config.from_envvar('EMOL_CONFIG')
 
     # Set up an app context
     app_context = app.app_context()
