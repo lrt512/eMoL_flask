@@ -6,6 +6,7 @@ from subprocess import call
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.utils import ImportStringError
 
 
 reply = str(input('This will destroy any existing eMoL data and cannot be undone. Proceed? (y/N) ')).lower().strip()
@@ -16,7 +17,7 @@ app = Flask(__name__)
 try:
     print('Try config from local config.py')
     app.config.from_object('emol.config')
-except RuntimeError:
+except ImportStringError:
     print('No local config.py, try EMOL_CONFIG environment variable')
     app.config.from_envvar('EMOL_CONFIG')
 app.db = SQLAlchemy(app)

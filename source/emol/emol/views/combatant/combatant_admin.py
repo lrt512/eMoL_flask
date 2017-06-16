@@ -3,6 +3,7 @@
 
 # standard library imports
 import logging
+from datetime import date
 
 # third-party imports
 from flask import Blueprint, render_template, current_app
@@ -12,6 +13,7 @@ from flask_login import current_user
 from emol.decorators import login_required
 from emol.exception.combatant import CombatantDoesNotExist
 from emol.models import Combatant, Discipline, Role
+from emol.utility.date import add_years
 
 BLUEPRINT = Blueprint('combatant_admin', __name__)
 
@@ -55,5 +57,10 @@ def combatant_detail(uuid):
         user=current_user,
         disciplines=Discipline.query.all(),
         global_card_date=Role.is_global_card_date(),
-        global_waiver_date=Role.is_global_waiver_date()
+        global_waiver_date=Role.is_global_waiver_date(),
+        # TODO: Take these out when testing is done
+        test_card_reminder=add_years(date.today(), -2, 31),
+        test_card_expiry=add_years(date.today(), -2, 1),
+        test_waiver_reminder=add_years(date.today(), -7, 31),
+        test_waiver_expiry=add_years(date.today(), -7, 1)
     )

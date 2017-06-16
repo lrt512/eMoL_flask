@@ -10,6 +10,7 @@ import os
 
 # third-party imports
 from flask import Flask
+from werkzeug.utils import ImportStringError
 
 
 def create_app():
@@ -18,7 +19,7 @@ def create_app():
     try:
         print('Try config from local config.py')
         app.config.from_object('emol.config')
-    except RuntimeError:
+    except ImportStringError:
         print('No local config.py, try EMOL_CONFIG environment variable')
         app.config.from_envvar('EMOL_CONFIG')
 

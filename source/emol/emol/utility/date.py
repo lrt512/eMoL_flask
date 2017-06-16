@@ -38,12 +38,13 @@ def string_to_date(date_str):
     return date_time.date()
 
 
-def add_years(start_date, years):
+def add_years(start_date, years, days=None):
     """Return a date in the future.
 
     Args:
         start_date: The date to change
         years: number of years to add
+        days: optional number of days to add
 
     Returns:
         The adjusted date
@@ -55,4 +56,8 @@ def add_years(start_date, years):
     if isinstance(start_date, str):
         start_date = datetime.strptime(start_date, DATE_FORMAT)
 
-    return start_date + relativedelta(years=years)
+    delta = relativedelta(years=years)
+    if days is not None:
+        delta += relativedelta(days=days)
+
+    return start_date +  delta

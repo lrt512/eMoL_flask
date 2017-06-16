@@ -37,7 +37,7 @@
          * @param method {string} The HTTP method to use
          * @param callback {function} The callback function to call
          */
-        function submit_combatant(method, callback) {
+        function submit_combatant(callback) {
             var form = $('#edit-combatant-form'),
                 validation_error = $('#validation-error-notice');
 
@@ -48,14 +48,12 @@
             }
 
             var url = '/api/combatant/';
-            if (method === 'PUT')
-            {
-                url += $('#uuid').val();
-            }
+            var uuid = $('#uuid').val();
+            url += uuid ? uuid : 'new';
 
             $.ajax({
                 url: url,
-                method: method,
+                method: uuid ? 'PUT' : 'POST',
                 data: serialize_form(),
                 dataType: 'json',
                 contentType: 'application/json; charset=UTF-8',
@@ -103,7 +101,7 @@
                     var combatant_detail = $('#combatant-detail');
 
                     combatant_detail.find('.btn-save').click(function () {
-                        submit_combatant('POST', function () {
+                        submit_combatant(function () {
                             save_button();
                             dataTable.ajax.reload(false);
                         });
@@ -138,7 +136,7 @@
                 var combatant_detail = $('#combatant-detail');
 
                 combatant_detail.find('.btn-save').click(function () {
-                    submit_combatant('PUT', function () {
+                    submit_combatant(function () {
                         save_button();
                         dataTable.ajax.reload(false);
                     });
@@ -156,6 +154,7 @@
                     moveOnSelect: true,
                     showFilterInputs: false,
                     infoText: false,
+                    noMoveAll: true,
                     selectCallback: selection_changed
                 });
                 combatant_detail.modal('show');

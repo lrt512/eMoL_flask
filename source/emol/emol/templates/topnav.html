@@ -47,6 +47,10 @@
                             <span class="collapsed">Import Combatants</span>
                         </a></li>
                     {% endif %}
+                    <li><a href="#" title="Trigger Mailing" id="trigger-mail">
+                        <i class="fa fa-envelope" aria-hidden="true"></i>
+                        <span class="collapsed">Trigger Mailing</span>
+                    </a></li>
                 {% endif %}
             </ul>
 
@@ -69,42 +73,21 @@
     </div>
 </nav>
 
-        {#  {% if current_user is defined %}
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu"></button>
-
-            {% if not current_user.is_anonymous and not http_error %}
-                <ul class="nav navbar-nav" id="menu">
-                    <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-bars fa-2"></i>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/home"><i class="fa fa-home" aria-hidden="true"></i>&nbsp;Home</a></li>
-                            {% if current_user is defined and current_user.is_admin %}
-                                <li><a href="/user-list"><i class="fa fa-user-plus" aria-hidden="true"></i>&nbsp;User List</a></li>
-                            {% endif %}
-                            {% if current_user is defined and current_user.has_role(None, 'edit_officer_info') %}
-                                <li><a href="/officer-list"><i class="fa fa-user-circle-o" aria-hidden="true"></i>&nbsp;Kingdom Officers</a></li>
-                            {% endif %}
-                            {% if current_user is defined and current_user.can_see_combatant_list %}
-                                <li><a href="/combatant-list"><i class="fa fa-user-o" aria-hidden="true"></i>&nbsp;Combatant List</a></li>
-                                <li><a href="/combatant-stats"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;Combatant Statistics</a></li>
-                            {% endif %}
-                            {% if current_user is defined and current_user.has_role('any', 'warrant_roster') %}
-                                <li><a href="/warrant-roster"><i class="fa fa-file-text-o" aria-hidden="true"></i>&nbsp;Warrant Roster</a></li>
-                            {% endif %}
-                            {% if current_user is defined and current_user.has_role('any', 'can_import') %}
-                                <li><a href="/import"><i class="fa fa-upload" aria-hidden="true"></i>&nbsp;Import Combatants</a></li>
-                            {% endif %}
-                        </ul>
-                    </li>
-                </ul>
-            {% endif %}
-         {% endif %}#}
-
+{% if current_user is defined and not current_user.is_anonymous %}
 <script>
     $(document).ready(function()
     {
-
+        $('#trigger-mail').click(function()
+        {
+            $.ajax({
+                method: 'POST',
+                url: '/api/cron/mail',
+                success: function()
+                {
+                    alert('mail!');
+                }
+            })
+        });
     });
 </script>
+{% endif %}

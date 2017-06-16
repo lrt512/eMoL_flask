@@ -26,6 +26,7 @@ class Config(app.db.Model):
         - float
         - datetime
         - date
+        - list
 
     """
 

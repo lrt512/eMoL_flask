@@ -9,7 +9,7 @@ from flask import Blueprint, render_template, request
 
 # application imports
 from emol.decorators import login_required
-from emol.models import Combatant, Discipline
+from emol.models import Combatant, Discipline, CombatantAuthorization, Warrant
 
 BLUEPRINT = Blueprint('user', __name__)
 
@@ -99,28 +99,22 @@ def combatant_stats():
     for disc in Discipline.query.all():
         disc_results = []
 
-        # Count the numbers for each primary authorization
-        for auth in [a for a in disc.authorizations if a.is_primary is True]:
+        # Count the numbers for each authorization
+        for auth in disc.authorizations:
             disc_results.append({
                 'name': auth.name,
-                'count': Combatant.query.filter(
-                    # Yes, the values of disc.slug and auth.slug in the lambda
-                    # need to be what they are in the current iteration.
-                    # pylint: disable=cell-var-from-loop
-                    Combatant.authorizations[disc.slug][auth.slug] is True
-                ).count()
+                'count': CombatantAuthorization.query
+                    .filter(CombatantAuthorization.authorization_id==auth.id)
+                    .count()
             })
 
         # Count the numbers for each marshal type
         for marshal in disc.marshals:
             disc_results.append({
                 'name': marshal.name,
-                'count': Combatant.query.filter(
-                    # Yes, the values of disc.slug and marshal.slug in the
-                    # lambda need to be what they are in the current iteration.
-                    # pylint: disable=cell-var-from-loop
-                    Combatant.authorizations[disc.slug][marshal.slug] is True
-                ).count()
+                'count': Warrant.query
+                .filter(Warrant.marshal_id==marshal.id)
+                .count()
             })
 
         results[disc.name] = disc_results

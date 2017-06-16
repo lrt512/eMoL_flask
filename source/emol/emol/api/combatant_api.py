@@ -20,9 +20,9 @@ from flask_restful import Resource, fields
 # application imports
 from emol.decorators import login_required
 from emol.models import Combatant
+from emol.utility.date import string_to_date
 
-
-@current_app.api.route('/api/combatant/<string:uuid>', '/api/combatant')
+@current_app.api.route('/api/combatant/<string:uuid>')
 class CombatantApi(Resource):
     """Endpoint for combatant creation and updates.
 
@@ -32,7 +32,7 @@ class CombatantApi(Resource):
 
     @classmethod
     @login_required
-    def post(cls):
+    def post(cls, uuid):
         """Create a new combatant.
 
         Delegates incoming combatant data to the Combatant model class
@@ -44,7 +44,9 @@ class CombatantApi(Resource):
             400 if any error occurred
 
         """
-        print(request.json)
+        if uuid != 'new':
+            return {'message': 'Illegal POST'}, 400
+
         combatant = Combatant.create(request.json)
         return {'uuid': combatant.uuid}, 200
 
@@ -243,3 +245,34 @@ class TestLoginApi(Resource):
 
         user = User.query.filter(User.id == user).one()
         login_user(user)
+
+@current_app.api.route('/api/combatant/<string:uuid>/card-date')
+class CombatantCardDateApi(Resource):
+    """Endpoint for managing combatant card dates
+
+    Permitted methods: POST
+
+    """
+
+    @classmethod
+    @login_required
+    def post(cls, uuid):
+        """Renew a combatant's card for the given date.
+
+        Args:
+            uuid: The combatant's UUID
+
+        Returns:
+            200 if all is well
+            400 if any error occurred
+
+        """
+        combatant = Combatant.get_by_uuid(uuid)
+
+        discipline = request.json.get('discipline')
+        card_date = request.json.get('card_date')
+        card = combatant.get_card(discipline, create=True)
+        if card is None:
+            return
+
+        card.renew(string_to_date(card_date))

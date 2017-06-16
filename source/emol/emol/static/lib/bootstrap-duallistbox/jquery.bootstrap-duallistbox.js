@@ -27,7 +27,8 @@
       eventMoveAllOverride: false,                                                        // boolean, allows user to unbind default event behaviour and run their own instead
       eventRemoveOverride: false,                                                         // boolean, allows user to unbind default event behaviour and run their own instead
       eventRemoveAllOverride: false,                                                       // boolean, allows user to unbind default event behaviour and run their own instead
-      selectCallback: null
+      selectCallback: null,
+      noMoveAll: false
     },
     // Selections are invisible on android if the containing select is styled with CSS
     // http://code.google.com/p/android/issues/detail?id=16922
@@ -464,8 +465,8 @@
       this.setEventMoveAllOverride(this.settings.eventMoveAllOverride);
       this.setEventRemoveOverride(this.settings.eventRemoveOverride);
       this.setEventRemoveAllOverride(this.settings.eventRemoveAllOverride);
-
-        this.setSelectCallback(this.settings.selectCallback);
+      this.setSelectCallback(this.settings.selectCallback);
+      this.setNoMoveAll(this.settings.noMoveAll);
 
       // Hide the original select
       this.element.hide();
@@ -737,6 +738,18 @@
     },
     setSelectCallback: function(value, refresh) {
         this.settings.selectCallback = value;
+        if (refresh) {
+          refreshSelects(this);
+        }
+        return this.element;
+    },
+    setNoMoveAll: function(value, refresh) {
+      this.settings.noMoveAll = value;
+        if (value == true)
+        {
+          this.container.find('.btn.moveall').remove();
+          this.container.find('.btn.removeall').remove();
+        }
         if (refresh) {
           refreshSelects(this);
         }

@@ -232,7 +232,7 @@ class SetupApi(Resource):
                 )
                 current_app.db.session.add(marshal)
 
-        Config.set('waiver_reminders', data.get('waiver_reminders'))
+        Config.set('waiver_reminders', [30, 60])
         Config.set('is_setup', True)
         current_app.db.session.commit()
 

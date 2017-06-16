@@ -68,3 +68,17 @@ class CronApi(Resource):
 
         # Get a new cron token
         current_app.cron_helper.new_cron_token()
+
+@current_app.api.route('/api/cron/mail')
+class TempMailApi(Resource):
+    """Temporary endpoint for invoking the daily check
+
+    Permitted methods: POST
+
+    This endpoint will be removed once mail is stable.
+
+    """
+
+    @staticmethod
+    def post():
+        daily_check()

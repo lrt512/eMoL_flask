@@ -172,7 +172,7 @@
                 <div class="row space-top-3 space-bottom-3">
                     <div class="col100 center">
                         <span class="discipline">{{ discipline.name }}</span>
-                        ({{ card.card_expiry }})
+                        ({{ card.expiry_date }})
                     </div>
                 </div>
                 {% set count = discipline.authorizations|length %}
@@ -222,7 +222,7 @@
             {% endif %}
         {% endfor %}
         <div class="row space-top-5">
-            <div class="col100">
+            <div class="col100 center">
                 Waiver Expiry: {{ combatant.waiver_expiry }}
             </div>
         </div>
