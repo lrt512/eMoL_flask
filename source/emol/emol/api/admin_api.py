@@ -45,14 +45,6 @@ class SetupApi(Resource):
                             16 bytes (AES-128), 24 bytes (AES-192), or 32 bytes
                             (AES-256).
 
-            global_card_date:   Boolean indicating whether authorization card
-                                dates are global (one per card) or individual
-                                (one per discipline)
-
-            global_waiver_date: Boolean indicating whether waiver dates are
-                                global (one per card) or individual (one per
-                                discipline)
-
             admin_emails:   A list of email addresses that must correspond to
                             Google accounts. Each address will be given system
                             admin privilege
@@ -141,8 +133,6 @@ class SetupApi(Resource):
 
         # card and waiver date states
         current_app.logger.debug('Set card and waiver states')
-        global_card_date = data.get('global_card_date', False)
-        global_waiver_date = data.get('global_waiver_date', False)
 
         current_app.logger.debug('Set up roles')
         # Roles from the role definitions in roles.py
@@ -233,6 +223,7 @@ class SetupApi(Resource):
                 current_app.db.session.add(marshal)
 
         Config.set('waiver_reminders', [30, 60])
+        Config.set('card_reminders', [30, 60])
         Config.set('is_setup', True)
         current_app.db.session.commit()
 

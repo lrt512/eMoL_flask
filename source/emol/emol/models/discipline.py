@@ -20,75 +20,7 @@ class Discipline(app.db.Model):
     This class is an identifier and carrier for authorizations, marshals, and
     optionally card and waiver dates.
 
-    The structure of Disciplines, Authorizations, and Marshals mirrors the
-    structure of Combatant.authorizations.
-
-    Combatant
-        |
-        - Authorizations
-        |  |
-        |  - Armoured Combat (discipline)
-        |  |     |
-        |  |     - Weapon and Shield (authorization)
-        |  |     |
-        |  |     - Two Weapon (authorization)
-        |  |
-        |  - Rapier (discipline)
-        |        |
-        |        - Heavy Rapier (authorization)
-        |        |
-        |       - Cut & Thrust (authorization)
-        |
-        - Marshals
-        |   |
-        |   - Armoured Combat (discipline)
-        |   |   |
-        |   |   - Marshal (marshal)
-        |   |
-        |   - Rapier (discipline)
-        |       |
-        |       - Marshal (marshal)
-        |       |
-        |       - Cut & Thrust Marshal (marshal)
-        |
-        |
-        |- Card Dates
-        |   |
-        |   - Either one global, or one per discipline (see Card)
-        |
-        - Waiver Dates
-             |
-             - Either one global, or one per discipline (see Waiver)
-
-    In code:
-
-    Combatant.authorizations = {
-        'armoured-combat': {
-            'authorizations': {
-                'weapon-shield': True,
-                'two-weapon': True,
-                'great-weapon': False
-            },
-            'marshal': {
-                'marshal': True
-            },
-            'card_date': <date> (if per-discipline)
-            'waiver_date': <date> (if per-discipline)
-        },
-        'rapier': {
-            'authorizations': {
-                'heavy-rapier': True,
-                'cut-thrust': True,
-                'two-weapon': False,
-            },
-            'marshal': {
-                'marshal': True,
-                'cut-thrust-marshal': True
-            },
-            'card_date': <date> (if per-discipline)
-            'waiver_date': <date> (if per-discipline)
-        }
-    }
+    See Card model docs for description
 
     Attributes:
         id: Primary key in the database
@@ -129,7 +61,7 @@ class Discipline(app.db.Model):
     @classmethod
     def find(cls, discipline):
         """Find a discipline."""
-        if discipline is None:
+        if discipline is None or discipline == 'any':
             return None
 
         if isinstance(discipline, Discipline):

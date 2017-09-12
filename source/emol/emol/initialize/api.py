@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Initialize cron."""
+"""Initialize the Flask-RESTful API."""
 
 # standard library imports
 import types

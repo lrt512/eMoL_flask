@@ -60,5 +60,5 @@ def get(officer_id):
         parent_slug=(officer.parent.short_title
                      if officer and officer.parent else None),
         officers=[o for o in Officer.query.all()
-                  if officer != o and o not in officer.children]
+                  if officer and officer != o and o not in officer.children]
     )

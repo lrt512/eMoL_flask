@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Initialize cron."""
+"""Initialize cron helper to receive requests via cron scripts."""
 
 # standard library imports
 

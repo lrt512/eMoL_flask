@@ -27,6 +27,7 @@ def index():
     else display the nouser home page
 
     """
+    print(url_for('combatant_admin.combatant_stats'))
     if is_setup() is False:
         current_app.logger.info('Redirecting to setup')
         return redirect(url_for('setup.setup'))
@@ -36,7 +37,7 @@ def index():
     elif current_user.is_admin is True:
         return redirect(url_for('user_admin.user_list'))
     else:
-        return redirect(url_for('combatant_admin.combatant_list'))
+        return redirect(url_for('combatant_admin.combatant_stats'))
 
 
 @BLUEPRINT.route('/login', methods=['GET', 'POST'])

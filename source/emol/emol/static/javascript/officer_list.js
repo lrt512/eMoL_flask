@@ -64,6 +64,9 @@ $(document).ready(function ()
         }
     };
 
+    /**
+     * Clicked edit for an officer, load the modal.
+     */
     $(officerListSelector).on('click', '.btn-edit', function (evnt)
     {
         var tr = evnt.target.closest('tr'),
@@ -94,6 +97,9 @@ $(document).ready(function ()
         });
     });
 
+    /**
+     * DataTable for the officer list
+     */
     dataTable = $(officerListSelector).DataTable({
         dom: 'Bfrtip',
         ajax: '/api/officer-list-datatable',

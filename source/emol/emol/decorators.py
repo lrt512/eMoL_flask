@@ -15,7 +15,7 @@ from flask_login import current_user
 def login_required(handler_method):
     """Require that a user be logged in.
 
-    To use it, decorate your method like this::
+    To use it, decorate your method like this:
 
         @login_required
         def get(self):

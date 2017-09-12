@@ -67,16 +67,6 @@ class Role(app.db.Model):
         return role.id
 
     @classmethod
-    def is_global_card_date(cls):
-        """Indicate whether the edit_card_date role is global or not."""
-        return cls.query.filter(cls.slug == 'edit_card_date').one().is_global
-
-    @classmethod
-    def is_global_waiver_date(cls):
-        """Indicate whether the edit_waiver_date role is global or not."""
-        return cls.query.filter(cls.slug == 'edit_waiver_date').one().is_global
-
-    @classmethod
     def template_list(cls):
         """Get a list of role names and slugs for template use."""
         return [RoleTuple(slug=r.slug, name=r.name, is_global=r.is_global)

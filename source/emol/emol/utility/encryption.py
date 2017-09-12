@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 """Encryption utility class.
 
-This module presents a class that wraps the pyaes library to provide encryption
- and decryption services for eMoL.
+This module presents a class that wraps the PyCrypto library to provide
+encryption and decryption services for eMoL.
 
 """
 
 # standard library imports
-import json
 import base64
-import hashlib
+import json
+
 from Crypto import Random
 from Crypto.Cipher import AES
-
 
 # application imports
 from emol.exception.encryption_exception import EncryptionException

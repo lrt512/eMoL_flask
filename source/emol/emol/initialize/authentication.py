@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Initialize application logger."""
+"""Initialize Authomatic for authentication."""
 
 # standard library imports
 
@@ -10,13 +10,12 @@ from flask_login import LoginManager
 
 # application imports
 from emol.models import User, AnonymousUser
-from emol.utility.setup import is_setup
 
 
 def init_authentication():
     """Set up Authomatic and flask_login.
 
-    see http://peterhudec.com/authomatic/
+    See http://peterhudec.com/authomatic/
 
     See comments for login() in views/home.py for detail about oauth with
     Google accounts for users.
@@ -42,5 +41,5 @@ def init_authentication():
     @current_app.login_manager.user_loader
     def load_user(user_id):
         """Map the user class for the flask_login manager."""
-        current_app.logger.debug('login_manager: {}'.format(user_id))
+        #current_app.logger.debug('login_manager: {}'.format(user_id))
         return User.query.filter(User.email == user_id).first()

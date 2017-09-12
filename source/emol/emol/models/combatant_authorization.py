@@ -12,7 +12,7 @@ __all__ = ['CombatantAuthorization']
 
 
 class CombatantAuthorization(app.db.Model):
-    """Link an authorization to a combatant's card.
+    """Link an authorization to a combatant via the appropriate card.
 
     Properties:
         card_id: The card

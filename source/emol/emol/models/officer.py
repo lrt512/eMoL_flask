@@ -60,7 +60,10 @@ class Officer(app.db.Model):
     note = app.db.Column(app.db.String(1024))
 
     discipline_id = app.db.Column(app.db.Integer, app.db.ForeignKey('discipline.id'))
-    discipline = app.db.relationship('Discipline')
+    discipline = app.db.relationship(
+        'Discipline',
+        backref=app.db.backref('officer', uselist=False)
+    )
 
     parent_id = app.db.Column(app.db.Integer, app.db.ForeignKey('officer.id'))
     parent = app.db.relationship('Officer', backref='children', remote_side=[id])

@@ -27,6 +27,11 @@
                                         <span title="This is the date the waiver is signed.&#013;Testing: To get a reminder email tonight, set the date for {{ test_waiver_reminder }}&#013;Testing: To get an expiry email tonight, set the date for {{ test_waiver_expiry }}">
                                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                                         </span>
+                                        {%  if combatant  %}
+                                        <span title="{{combatant.waiver.reminder_tooltip}}">
+                                            <i class="fa fa-envelope" aria-hidden="true"></i>
+                                        </span>
+                                        {% endif %}
                                     </label>
                                     <div class="col-md-5">
                                         <input type="text" id="edit-combatant-waiver_date" name="waiver_date"
@@ -139,7 +144,6 @@
                             dataType: 'json',
                             contentType: 'application/json; charset=UTF-8',
                             success: function (response, status, xhr) {
-                                alert('wat');
                             }
                         });
                     });

@@ -1,9 +1,18 @@
+# -*- coding: utf-8 -*-
 """Anonymous user class."""
 
 from flask_login import AnonymousUserMixin
 
 
 class AnonymousUser(AnonymousUserMixin):
+    """A class to model a 'User' for anonymous visitors to the site.
+
+    Enforces non-access privilege to administrative functionality. Basically,
+    if asked anything it says no.
+
+    Attributes and properties as described for User.
+    """
+
     @property
     def is_system_admin(self):
         """Indicate whether this user is a system admin or not."""

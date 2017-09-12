@@ -1,5 +1,21 @@
 # -*- coding: utf-8 -*-
-"""Model an authorization card expiry date."""
+"""Model an authorization card.
+
+    A card represents a single martial discipline.
+
+    Card
+    |
+    - Discipline (via discipline_id)
+    |
+    - Authorizations (Authorization model via CombatantAuthorization)
+    |
+    - Warrants (Marshal model via Warrant)
+    |
+    - Card Date (The date auths were renewed, not the expiry date)
+
+    A combatant may hold one card for each discipline they have authorizations
+    in. These show up as the `cards` relationship on the Combatant model.
+"""
 
 # standard library imports
 from dateutil.relativedelta import relativedelta
@@ -34,7 +50,14 @@ class Card(app.db.Model):
         discipline_id: ID of the discipline this card is for
         card_date: Date this card was last renewed
         authorizations: Authorizations attached to this card
-            (via CombatantAuthorization)
+            (Authorization model via CombatantAuthorization)
+        warrants: Marshal warrants attached to this card
+            (Marshal model via Warrant)
+
+    Properties:
+        expiry_date: The card's expiry date
+        expiry_date_str: Expiry date as formatted string
+        expiry_days: Number of days until expiry
 
     Backrefs:
         reminders: This card's expiry reminders
@@ -53,7 +76,7 @@ class Card(app.db.Model):
         app.db.Integer,
         app.db.ForeignKey('combatant.id')
     )
-    combatant = app.db.relationship('Combatant')
+    combatant = app.db.relationship('Combatant', uselist=False)
 
     discipline_id = app.db.Column(
         app.db.Integer,
@@ -227,12 +250,34 @@ class Card(app.db.Model):
 
         # Create the reminder for expiry day
         expiry_date = (self.card_date + relativedelta(years=2))
+
+        days_to_expiry = (expiry_date - today()).days
+        # If already expired, don't need reminders
+        if days_to_expiry <= 0:
+            return
+
+        # Expiry notice
         CardReminder.schedule(self, expiry_date, is_expiry=True)
 
+        reminders = Config.get('card_reminders')
+        reminders.sort()
+        reminders_scheduled = 0
+
         # Reminders at the specified points before expiry day
-        for days in Config.get('waiver_reminders'):
+        for days in reminders:
+            # Don't send reminders for the past
+            if days_to_expiry - days < 0:
+                continue
+
+            # Schedule for future date
             reminder_date = expiry_date - relativedelta(days=days)
             CardReminder.schedule(self, reminder_date, is_expiry=False)
+            reminders_scheduled += 1
+
+        # No reminders? Make sure there's one tonight then because all reminder
+        # days are in the past.
+        if reminders_scheduled == 0:
+            CardReminder.schedule(self, today(), is_expiry=False)
 
         app.db.session.commit()
 
@@ -252,11 +297,11 @@ class CardReminder(app.db.Model):
         'Card',
         backref=app.db.backref('reminders', cascade='all, delete-orphan')
     )
-
     is_expiry = app.db.Column(app.db.Boolean, nullable=False)
 
     def mail(self):
         """Send reminder or expiry email as appropriate to this instance."""
+
         discipline = self.card.discipline
         if self.is_expiry is True:
             template = EMAIL_TEMPLATES.get('card_expiry')
@@ -274,6 +319,7 @@ class CardReminder(app.db.Model):
             )
 
         return Emailer().send_email(self.card.combatant.email, subject, body)
+
 
     @classmethod
     def schedule(cls, card, reminder_date, is_expiry):

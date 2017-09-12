@@ -375,7 +375,6 @@ class Combatant(app.db.Model):
             app.db.session.commit()
             return combatant.update(data, is_new=True)
 
-    @role_required('edit_combatant_info')
     def update(self, data, is_new=False):
         """Create or update a combatant using a dict of data.
 
@@ -393,19 +392,22 @@ class Combatant(app.db.Model):
                 if self.waiver is None:
                     self.waiver = Waiver.create(self)
                 else:
+                    print(date_str)
                     self.waiver.renew(date_str)
 
         # Invoke update_info for updating data that can be done via self-serve
-        self.update_info(data, is_new)
+        if current_user.has_role(None, 'edit_combatant_info'):
+            self.update_info(data, is_new)
 
-        self.update_encrypted()
-        self.last_update = datetime.utcnow()
+            self.update_encrypted()
+            self.last_update = datetime.utcnow()
+
+            if is_new:
+                # Invoke the create class method to generate the
+                # record, send an email, etc.
+                PrivacyAcceptance.create(self)
+
         app.db.session.commit()
-
-        if is_new:
-            # Invoke the create class method to generate the
-            # record, send an email, etc.
-            PrivacyAcceptance.create(self)
 
         return self
 

@@ -68,41 +68,41 @@
     </div>
 
     <form method="POST" target="_blank">
-        <div class="row">
-            <label for="rex" class="col-md-2">Rex</label>
+        <div class="form-group row">
+            <label for="rex" class="col-md-3 col-form-label">Rex</label>
             <div class="col-md-4">
-                <input type="text" id="rex" name="rex" class="lg-width initial-focus">
+                <input type="text" id="rex" name="rex" class="lg-width form-control initial-focus">
             </div>
         </div>
-        <div class="row">
-            <label for="regina" class="col-md-2">Regina</label>
+        <div class="form-group row">
+            <label for="regina" class="col-md-3 col-form-label">Regina</label>
             <div class="col-md-4">
-                <input type="text" id="regina" name="regina" class="lg-width">
+                <input type="text" id="regina" name="regina" class="lg-width form-control">
             </div>
         </div>
-        <div class="row">
-            <label for="coronation-date" class="col-md-2">Coronation Date</label>
-            <div class="col-md-4">
-                <input type="text" id="coronation-date" name="coronation-date" readonly>
+        <div class="form-group row">
+            <label for="coronation-date" class="col-md-3 col-form-label">Coronation Date</label>
+            <div class="col-md-2">
+                <input type="text" id="coronation-date" name="coronation-date" class="form-control" readonly>
             </div>
         </div>
-        <div class="row">
-            <label for="reign-title" class="col-md-2">Reign</label>
+        <div class="form-group row">
+            <label for="reign-title" class="col-md-3 col-form-label">Reign</label>
             <div class="col-md-4">
-                <input type="text" id="reign-title" name="reign-title" class="lg-width">
+                <input type="text" id="reign-title" name="reign-title" class="lg-width form-control">
             </div>
         </div>
-        <div class="row">
-            <label for="discipline" class="col-md-2">Discipline</label>
+        <div class="form-group row">
+            <label for="discipline" class="col-md-3 col-form-label">Discipline</label>
             <div class="col-md-4">
-                <select id="discipline" name="discipline">
+                <select id="discipline" name="discipline" class="form-control">
                     {% for discipline in disciplines %}
                         <option value="{{ discipline.slug }}">{{ discipline.name }}</option>
                     {% endfor %}
                 </select>
             </div>
         </div>
-        <div class="row">
+        <div class="form-group row">
             <div class="col-md-10"></div>
             <div class="col-md-2">
                 <button type="submit" class="btn btn-primary" id="generate">Generate</button>

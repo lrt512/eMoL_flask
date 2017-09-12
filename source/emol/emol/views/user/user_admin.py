@@ -26,7 +26,7 @@ def user_list():
 
 @BLUEPRINT.route('/user-detail/<user_id>', methods=['GET'])
 @admin_required
-def get(user_id):
+def user_detail(user_id):
     """Return the user detail form.
 
     Fill it in if a user ID is supplied

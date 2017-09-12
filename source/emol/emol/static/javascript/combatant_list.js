@@ -64,6 +64,14 @@
             });
         }
 
+        /**
+         * Selection changed handler for authorization list. Performs an AJAX
+         * update to the combatant's card to add/remove the authorization or
+         * warrant as applicable.
+         *
+         * @param $option {jQuery} The (de)selected option from the list
+         * @param selected {boolean} The selected state of the option
+         */
         function selection_changed($option, selected) {
             var uuid = $('#uuid').val();
 
@@ -127,6 +135,9 @@
             }
         };
 
+        /**
+         * Clicked edit for a combatant, load the modal.
+         */
         combatant_list.on('click', '.btn-edit', function (evnt) {
             var tr = evnt.target.closest('tr'),
                 row = dataTable.row(tr),
@@ -162,6 +173,9 @@
             });
         });
 
+        /**
+         * Clicked delete on a combatant. Confirm and delete (or not).
+         */
         combatant_list.on('click', '.btn-delete', function (evnt) {
             var tr = evnt.target.closest('tr'),
                 row = dataTable.row(tr),
@@ -184,6 +198,9 @@
             });
         });
 
+        /**
+         * DataTable for the combatant list
+         */
         dataTable = combatant_list.DataTable({
             dom: 'Bfrt',
             ajax: '/api/combatant-list-datatable',
@@ -229,10 +246,14 @@
         });
     });
 
+    // TODO: Get rid of this later
     $(document).on('change', '.picklist', function (event) {
         console.info($(this).attr('name'));
     });
 
+    /**
+     * Resend the privacy policy email to a combatant
+     */
     $(document).on('click', '.btn-resend-privacy', function () {
         var row = $(this).parents('tr'),
             data = $('#combatant-list').DataTable().row(row).data();
@@ -247,6 +268,9 @@
         });
     });
 
+    /**
+     * View a combatant's card
+     */
     $(document).on('click', '.btn-view-card', function () {
         var row = $(this).parents('tr'),
             data = $('#combatant-list').DataTable().row(row).data();

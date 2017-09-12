@@ -14,7 +14,19 @@ __all__ = ['Authorization']
 
 
 class Authorization(app.db.Model):
-    """Model an authorization for a discipline."""
+    """Model an authorization for a discipline.
+
+    Authorizations are referenced by the Card model through the
+    CombatantAuthorization association model. See Card model docs for detail.
+
+    Attributes:
+        id: Primary key in the database
+        slug: Slugified name for the authorization
+        name: Full name of the authorization
+        discipline_id: ID of the discipline this card is for
+        is_primary: Authorization can be a primary authorization
+
+    """
 
     id = app.db.Column(app.db.Integer, primary_key=True)
     slug = app.db.Column(app.db.String(255), nullable=False)

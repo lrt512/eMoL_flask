@@ -63,6 +63,9 @@ $(document).ready(function ()
         }
     };
 
+    /**
+     * Clicked edit for a user, load the modal.
+     */
     $(userListSelector).on('click', '.btn-edit', function (evnt)
     {
         var tr = evnt.target.closest('tr'),
@@ -93,6 +96,9 @@ $(document).ready(function ()
         });
     });
 
+    /**
+     * DataTable definition for the user list
+     */
     dataTable = $(userListSelector).DataTable({
         dom: 'Bfrtip',
         ajax: '/api/user-list-datatable',

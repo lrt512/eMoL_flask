@@ -98,6 +98,10 @@ class Waiver(app.db.Model):
         """Number of days until this card expires."""
         return (self.expiry_date - today()).days
 
+    @property
+    def reminder_tooltip(self):
+        """Return tooltip text for waiver reminder dates"""
+        return '; '.join([t.tooltip for t in self.reminders])
 
 class WaiverReminder(app.db.Model):
     """Waiver expiry reminders for combatants.
@@ -170,3 +174,11 @@ class WaiverReminder(app.db.Model):
         )
         app.db.session.add(reminder)
         app.db.session.commit()
+
+    @property
+    def tooltip(self):
+        """Tooltip line for this reminder."""
+        if self.is_expiry:
+            return '{} (E)'.format(self.reminder_date)
+        else:
+            return '{} (R)'.format(self.reminder_date)

@@ -29,8 +29,12 @@ def view_card(card_id):
         - The combatant's card if the card ID is valid
 
     """
+    current_app.logger.info('Card for {}'.format(card_id))
     combatant = Combatant.query.filter(Combatant.card_id == card_id).one_or_none()
     if combatant is None:
+        current_app.logger.error(
+            'No combatant record for card ID: {}'.format(card_id)
+        )
         return render_template(
             'message/message.html',
             message='Could not find the specified combatant'

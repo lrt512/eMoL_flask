@@ -1,3 +1,7 @@
+/**
+ * JavaScript for app setup pages.
+ * TODO: Document this better.
+ */
 (function($)
 {
     "use strict";
@@ -6,8 +10,6 @@
     {
         var data = {
             encryption_key: $('#encryption_key').val(),
-            global_waiver_date: $('#global-waiver-date').is(':checked'),
-            global_card_date: $('#global-card-date').is(':checked'),
             admin_emails: [],
             disciplines: []
         };
