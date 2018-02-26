@@ -4,7 +4,6 @@ __pycache__/
 **/.idea
 **/.cache
 **/.vagrant
-vm/deploy/private
 **/*.pyc
 **/*.log
 

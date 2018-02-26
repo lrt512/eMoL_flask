@@ -1,0 +1,12 @@
+server_hostname: localhost:9022
+server_user: vagrant
+
+run_mailcatcher: true
+vagrant: true
+
+http_directory: /home/emol/public_html
+
+database_user: emol
+database_password: athena123.
+database_name: emol
+

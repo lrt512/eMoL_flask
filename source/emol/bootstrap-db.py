@@ -1,16 +1,27 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 
-import os
 import sys
 from subprocess import call
+from optparse import OptionParser
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import ImportStringError
 
+parser = OptionParser()
+parser.add_option("-f", "--force", action='store_true', dest='overwrite',
+                  default=None, help="force overwriting any existing data")
 
-reply = str(input('This will destroy any existing eMoL data and cannot be undone. Proceed? (y/N) ')).lower().strip()
-if reply != 'y':
+(options, args) = parser.parse_args()
+print(options)
+overwrite = options.overwrite
+
+if overwrite is None:
+    reply = str(input('This will destroy any existing eMoL data and cannot be '
+                      'undone. Proceed? (y/N) ')).lower().strip()
+    overwrite = reply.lower().strip() == 'y'
+
+if not overwrite:
     sys.exit(-1)
 
 app = Flask(__name__)

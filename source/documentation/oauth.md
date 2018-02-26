@@ -26,7 +26,7 @@ During development, it's unlikely that there will be an available domain to
 associate the development VM with. This is fine. Clever people have set up
 certain domains on the Internet to resolve to ```localhost```.
 
-One example of this is ```vcap.me```. If you use ```http://emol.vcap.me:8088```
+One example of this is ```vcap.me```. If you use ```http://emol.vcap.me:8080```
 to access the eMoL development server from a web browser, then you can set
 ```http://emol.vcap.me:8088/login``` as an authorized redirect URI in the
 Google developer console and OAuth will work in your development VM.

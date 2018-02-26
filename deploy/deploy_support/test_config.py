@@ -7,6 +7,7 @@ from fabric.api import *
 from fabric.colors import green, red, yellow
 from fabric.exceptions import NetworkError
 
+from .common import python_3_version
 
 def test_config():
     """Test config and abort on any errors."""
@@ -23,6 +24,8 @@ def test_config():
 
 def test_ssh():
     """Verify keyfile existence and test SSH to server."""
+    if not env.ssh_key:
+        print(yellow('SSH '))
     if not os.path.isfile(env.key_filename):
         return 'Keyfile does not exist'
 
@@ -54,22 +57,14 @@ def test_db():
 
 
 def test_python():
-    """Check for Python 3.5+ and virtualenv on the server."""
-    print(yellow('Check specified Python version'))
-    put(
-        os.path.join(
-            os.path.dirname(__file__),
-            'upload',
-            'check_version.py'
-        ),
-        '/tmp'
-    )
+    """Make sure Python 3.6 is present."""
+    print(yellow('Ensure Python 3.6 is present'))
 
     with settings(warn_only=True):
-        result = run('python3 /tmp/check_version.py')
-        run('rm /tmp/check_version.py')
-        if result.return_code == 0:
-            print(green('Python OK'))
-            return None
+        major, minor = python_3_version()
 
-        return "eMoL requires Python 3.6 or higher"
+        if minor is None or minor < 6:
+            print(red('No Python >= 3.6 is installed'))
+        else:
+            print(green('Python {}.{} OK').format(major, minor))
+            return None

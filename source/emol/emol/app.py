@@ -6,7 +6,6 @@ Various housekeeping tasks to get the app set up. Commentary inline.
 """
 
 # standard library imports
-import os
 
 # third-party imports
 from flask import Flask

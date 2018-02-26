@@ -1,0 +1,14 @@
+server_hostname: emol.ealdortest.ca
+server_user: emol
+server_keyfile: emol.ealdortest.ca.key
+
+config_file: emol.ealdortest.ca.config.py
+
+run_mailcatcher: true
+
+http_directory: /home/emol/public_html
+
+database_user: emol
+database_password: athena123.
+database_name: emol
+

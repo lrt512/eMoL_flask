@@ -11,7 +11,7 @@ from flask import Blueprint, render_template, request
 from emol.decorators import login_required
 from emol.models import Combatant, Discipline, CombatantAuthorization, Warrant
 
-BLUEPRINT = Blueprint('officer', __name__)
+BLUEPRINT = Blueprint('warrant_roster', __name__)
 
 # named tuple for marshal info passed to warrant roster template
 MarshalInfo = namedtuple(
@@ -42,7 +42,7 @@ def create_warrant_roster():
     """
     if request.method == 'GET':
         return render_template(
-            'officer/create_warrant_roster.html',
+            'warrant_roster/create_warrant_roster.html',
             disciplines=Discipline.query.all()
         )
     else:
@@ -54,7 +54,7 @@ def create_warrant_roster():
 
         for marshal in discipline.marshals:
             warrants = Warrant.query.filter(
-                Warrant.marshal_id==marshal.id
+                Warrant.marshal_id == marshal.id
             ).all()
 
             for warrant in warrants:
@@ -73,7 +73,7 @@ def create_warrant_roster():
         # return things discretely so that people messing with the template
         # don't need to work with objects and properties
         return render_template(
-            'officer/warrant_roster.html',
+            'warrant_roster/warrant_roster.html',
             coronation_date=request.form.get('coronation-date'),
             rex=request.form.get('rex'),
             regina=request.form.get('regina'),

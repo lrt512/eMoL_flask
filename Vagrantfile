@@ -2,34 +2,32 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-  #config.vm.box = "ubuntu/trusty64"
   config.vm.box = "bento/ubuntu-16.04"
   config.vm.hostname = "emol-dev"
-  
+
   config.vm.provider "virtualbox" do |vb|
     vb.memory = "1024"
     vb.name = "emol_dev"
     vb.gui = false
-    #vb.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
   end
 
-  
+
   # mailcatcher
   config.vm.network "forwarded_port", host: 8025, guest: 1080
 
   # flask development server
-  config.vm.network "forwarded_port", host: 8088, guest: 5000
+  config.vm.network "forwarded_port", host: 8080, guest: 5000
 
-  config.vm.synced_folder "../source", "/home/vagrant/source"
-  
+  config.vm.synced_folder "source/", "/home/vagrant/source"
+
   config.vm.provision "install-base",
                       type: "shell",
-                      inline: "/vagrant/provision/install-base",
+                      inline: "/vagrant/vm/install-base",
                       privileged: false
 
   # Run this one last!
   config.vm.provision "install-dev",
                       type: "shell",
-                      inline: "/vagrant/provision/install-dev",
+                      inline: "/vagrant/vm/install-dev",
                       privileged: false
 end

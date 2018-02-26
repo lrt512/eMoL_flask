@@ -93,4 +93,4 @@ def combatant_stats():
 
         results[disc.name] = disc_results
 
-    return render_template('user/combatant_stats.html', results=results)
+    return render_template('combatant/combatant_stats.html', results=results)
