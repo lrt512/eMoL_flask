@@ -1,0 +1,57 @@
+admin:
+  - ealdormere.emol@gmail.com
+users:
+  []
+
+disciplines:
+  Armoured Combat:
+    DKM:
+      name: Kingdom Earl Marshal
+      slug: KEM
+      reports: null
+    Authorizations:
+      - [name, slug]
+      - [Weapon & Shield, W/SH]
+      - [Two Weapon, TW]
+      - [Great Weapon, GW]
+      - [Siege, SW]
+      - [Combat Archery, CA]
+    Marshals:
+      - [name, slug]
+      - [Marshal, MSH]
+      - [Marshal in Training, MiT]
+      - [Group Marshal in Training, GMiT]
+  Rapier Combat:
+    DKM:
+      name: Kingdom Rapier Marshal
+      slug: KRM
+      reports: KEM
+    Authorizations:
+      - [name, slug]
+      - [Heavy Rapier, HR]
+      - [Cut & Thrust, CT]
+      - [Two Weapon, TW]
+      - [Parry Device, PD]
+    Marshals:
+      - [name, slug]
+      - [Marshal, RM]
+      - [Marshal in Training, MiT]
+      - [Group Marshal in Training, GMiT]
+  Archery:
+    DKM:
+      name: Kingdom Archery Marshal
+      slug: KAM
+      reports: KEM
+    Marshals:
+      - [name, slug]
+      - [Marshal, AM]
+      - [Marshal in Training, MiT]
+  Thrown Weapons:
+    DKM:
+      name: Kingdom Thrown Weapons Marshal
+      slug: KTM
+      reports: KEM
+    Marshals:
+      - [name, slug]
+      - [Marshal, TWM]
+      - [Marshal in Training, MiT]

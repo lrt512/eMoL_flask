@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% if uuid != None %}
+        <script type="text/javascript">
+            (function($)
+            {
+                $(document).ready(function()
+                {
+                    $('#decline, #accept').click(function()
+                    {
+                        var data = {
+                            accepted: $(this).attr('id') == 'accept',
+                            uuid: $('#uuid').val()
+                        };
+
+                        $.ajax({
+                            method: 'POST',
+                            url: '/api/privacy_policy',
+                            data: JSON.stringify(data),
+                            dataType: 'json',
+                            contentType: 'application/json; charset=UTF-8',
+                            success: function(data, status, xhr)
+                            {
+                                $('#privacy-buttons').addClass('hidden');
+                                $('#privacy-policy-text').addClass('hidden');
+                                if (data.accepted)
+                                {
+                                    $('#privacy-policy-accepted').removeClass('hidden');
+                                    $('#card-url')
+                                        .attr('href', data.card_url)
+                                        .text(data.card_url);
+                                }
+                                else
+                                {
+                                    $('#privacy-policy-declined').removeClass('hidden');
+                                }
+                            }
+                        })
+                    });
+                });
+            })(jQuery);
+        </script>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row" id="privacy-policy-text">
+        <div class="col-md-6 col-lg-offset-3">
+            We promise to sell your info to anyone who offers us money
+        </div>
+    </div>
+    {% if uuid != None %}
+        <div class="hidden" id="privacy-policy-accepted">
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3">
+                    <h2>Welcome to eMoL!</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3 bottom-space-md">
+                    You can now access your authorization card here:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3">
+                    <a href="#" id="card-url">#</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3 top-space-md">
+                    {% if has_sca_name %}
+                    Your card URL will not change unless you change your SCA name.
+                    {% else %}
+                    Your card URL will not change until you choose an SCA name.
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3">
+                    We've also sent you an email with your card's URL.
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3">
+                    (If your URL changes in future we'll send you a new email, don't worry!)
+                </div>
+            </div>
+        </div>
+        <div class="hidden" id="privacy-policy-declined">
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3">
+                    <h2>Declined Privacy Policy</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3 bottom-space-md">
+                    You've declined the privacy policy. As outlined in the email we sent you:
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-9 col-lg-offset-3 top-space-md">
+                    <ul>
+                        <li>We've deleted all record of you in the eMoL database</li>
+                        <li>The MoL has been notified that you need to be tracked manually</li>
+                        <li>The MoL will send you a card through via postal mail</li>
+                        <li>The MoL will track any new authorizations you get manually</li>
+                        <li>You will not receive any reminders about card expiry</li>
+                        <li>When your authorizations expire, it is up to you to contact
+                            the MoL and arrange to have your card stamped to keep it valid</li>
+                        <li>The MoL will still remind you when your waiver is near expiry</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row" id="privacy-buttons">
+            <input type="hidden" id="uuid" value="{{ uuid }}"/>
+            <div class="row top-space-lg">
+                <div class="col-md-7"></div>
+                <div class="col-md-5">
+                    <a class="btn btn-lg btn-md-width btn-default" id="decline">I Decline</a>
+                    <a class="btn btn-lg btn-md-width btn-primary" id="accept">I Accept</a>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

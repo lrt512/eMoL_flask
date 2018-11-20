@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block head %}
+    {% include 'includes/datatables.html' %}
+    <script>
+        (function($)
+        {
+            /*
+            Breaking DRY here with combatant_list.js, but we
+            do not want any chance of a user being able to
+            update anything other than their basic info
+            */
+            $(document).ready(function()
+            {
+                "use strict";
+
+                $('#edit-combatant-sca-name').focus();
+                $('#edit-combatant-form').validate();
+                /**
+                 * Serialize the combatant detail form into a JavaScript object
+                 * instead of the nonsense jQuery's serialize/serializeArray gives
+                 */
+                function serialize_form()
+                {
+                    var form = $('#edit-combatant-form'),
+                            data = {};
+
+                    form.find('input').each(function(index, input)
+                    {
+                        data[$(input).attr('name')] = $(input).val();
+                    });
+
+                    return JSON.stringify(data);
+                }
+
+                /**
+                 * Submit the form via AJAX and invoke a callback function on success
+                 * @param method {string} The HTTP method to use
+                 * @param callback {function} The callback function to call
+                 */
+                $('.btn-save').click(function()
+                {
+                    if (false === $('#edit-combatant-form').valid())
+                    {
+                        return;
+                    }
+
+                    $.ajax({
+                        url: '/api/combatant_update',
+                        method: 'PUT',
+                        data: serialize_form(),
+                        dataType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        success: function(response)
+                        {
+                            $('.container').show_messages(response.messages);
+                        },
+                        error: function(xhr)
+                        {
+                            $('.container').show_messages(['An unknown error occurred. Please contact the MoL']);
+                        }
+                    });
+                });
+            });
+        })(jQuery);
+    </script>
+{% endblock %}
+
+{% block body %}
+    <form id="edit-combatant-form">
+        <div class="row">
+            <input type="hidden" name="token" value="{{ token }}"/>
+            <input type="hidden" name="validation_token" value="{{ validation_token }}"/>
+            <div id="info" class="tab-pane fade in active">
+                {% include 'combatant/combatant_info.html' %}
+            </div>
+        </div>
+    </form>
+    <div class="row">
+        <div class="col-sm-8"></div>
+        <div class="col-sm-4">
+            <input type="button" class="btn btn-cancel" value="Cancel"/>
+            <input type="button" class="btn btn-primary btn-save" value="Save"/>
+        </div>
+    </div>
+{% endblock %}
