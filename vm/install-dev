@@ -13,22 +13,23 @@ fi
 
 # symlink scripts directory to ~/bin
 if [ ! -L "~/bin" ]; then
-    ln -s ~/source/scripts ~/bin
+    ln -fs ~/vagrant/scripts ~/bin
 fi
 
 # activate venv
 source ~/env/bin/activate
+pip install --upgrade pip
 pip install wheel
 
 # install webapp developer dependencies
-cd ~/source/emol
+cd ~/emol
+pip install -r req-production.txt
 pip install -r req-development.txt
 
-# prepare the keyfile directory for eMoL setup
-if [ ! -d "/home/vagrant/.key" ]; then
-    mkdir -p /home/vagrant/.key
-    chmod 0700 /home/vagrant/.key
-fi
+mysql -uroot -pqwert -e 'create database emol;'
 
-export EMOL_CONFIG=/home/vagrant/source/config/vagrant/config.py
-python ~/source/emol/bootstrap-db.py -f
+#export EMOL_CONFIG=/home/vagrant/emol/config/vagrant/config.py
+#export FLASK_APP=emol
+#cd ~/emol
+#pip install -e .
+#flask db upgrade

@@ -29,13 +29,13 @@ sudo timedatectl set-timezone America/Toronto
 [ "$(type -p mailcatcher)" ] || sudo gem install mailcatcher
 
 # cp /etc files
-sudo rsync -rltpv /vagrant/provision/files/etc/ /etc
+sudo rsync -rltpv /vagrant/files/etc/ /etc
 
 # do the rest from home directory
 cd /home/vagrant
 
 # create symlinks to dotfiles
-ln -s -f /vagrant/provision/files/dotfiles/.??* .
+ln -s -f /vagrant/files/dotfiles/.??* .
 
 # restart supervisor to fire up mailcatcher
 sudo supervisorctl reload
