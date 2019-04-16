@@ -56,9 +56,9 @@ AWS_REGION = 'ca-central-1'
 #
 # Create an eMoL specific user  that has a policy granting only the
 # required privileges and generate 
-AWS_ACCESS_KEY = 'AKIA22HWYWZXYEIJY7DC'
+AWS_ACCESS_KEY = 'AKIAABCDEF'
 # AWS secret key for the above access key
-AWS_SECRET_KEY = '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'
+AWS_SECRET_KEY = '<some secret key>'
 
 ##################################################################
 # Encryption key, stored in Amazon KMS
