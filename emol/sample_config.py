@@ -64,7 +64,7 @@ AWS_SECRET_KEY = '<some secret key>'
 # Encryption key, stored in Amazon KMS
 ##################################################################
 # ARN of a KMS key to use for encryption of data
-EMOL_KMS_KEY = 'arn:aws:kms:ca-central-1:743546861167:key/3091d64b-5656-4bd0-a787-ad2da3db2d73'
+EMOL_KMS_KEY = 'arn:aws:kms:...'
 
 ##################################################################
 # Mail settings
