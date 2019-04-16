@@ -17,14 +17,11 @@
     in. These show up as the `cards` relationship on the Combatant model.
 """
 
-# standard library imports
 from dateutil.relativedelta import relativedelta
 
-# third-party imports
 from flask import current_app as app
 from flask_login import current_user
 
-# application imports
 from emol.mail import Emailer
 from emol.mail.email_templates import EMAIL_TEMPLATES
 from emol.utility.date import add_years, today, DATE_FORMAT, LOCAL_TZ

@@ -4,7 +4,6 @@
 Anyone needing access to the database object should import db from here.
 
 """
-
 from .anonymous_user import AnonymousUser
 from .authorization import Authorization
 from .card import Card, CardReminder

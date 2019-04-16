@@ -6,15 +6,11 @@ encryption and decryption services for eMoL.
 
 """
 
-# standard library imports
 import base64
 import json
 
-from Crypto import Random
-from Crypto.Cipher import AES
-
-# application imports
-from emol.exception.encryption_exception import EncryptionException
+import boto3
+from flask import current_app
 
 
 class AESCipher(object):
@@ -26,8 +22,7 @@ class AESCipher(object):
 
     """
 
-    _key = None
-    _block_size = 16
+    _client = None
 
     def __init__(self, key):
         """Constructor.
@@ -41,15 +36,12 @@ class AESCipher(object):
         Raises:
             Exception if the keyfile cannot be read
         """
-        self._key = key
-
-    def _pad(self, s):
-        bs = AES.block_size
-        return s + (bs - len(s) % bs) * chr(bs - len(s) % bs)
-
-    @staticmethod
-    def _unpad(s):
-        return s[:-ord(s[len(s) - 1:])]
+        self._client = boto3.client(
+            'kms',
+            region_name=current_app.config['AWS_REGION'],
+            aws_access_key_id=current_app.config['AWS_ACCESS_KEY'],
+            aws_secret_access_key=current_app.config['AWS_SECRET_KEY']
+        )
 
     def encrypt(self, plaintext):
         """Encrypt the given data then base64 encode.
@@ -63,10 +55,11 @@ class AESCipher(object):
         if plaintext is None:
             return None
 
-        raw = self._pad(plaintext)
-        iv = Random.new().read(AES.block_size)
-        cipher = AES.new(self._key, AES.MODE_CBC, iv)
-        return base64.b64encode(iv + cipher.encrypt(raw))
+        metadata = self._client.encrypt(
+            KeyId=current_app.config['EMOL_KMS_KEY'],
+            Plaintext=plaintext
+        )
+        return base64.b64encode(metadata['CiphertextBlob'])
 
     def decrypt(self, ciphertext):
         """Base64 decode the given ciphertext and then decrypt.
@@ -80,10 +73,10 @@ class AESCipher(object):
         if ciphertext is None:
             return None
 
-        enc = base64.b64decode(ciphertext)
-        iv = enc[:AES.block_size]
-        cipher = AES.new(self._key, AES.MODE_CBC, iv)
-        return self._unpad(cipher.decrypt(enc[AES.block_size:])).decode('utf-8')
+        metadata = self._client.decrypt(
+            CiphertextBlob=base64.b64decode(ciphertext)
+        )
+        return metadata['Plaintext']
 
     def encrypt_json(self, data):
         """Convert dump data to a JSON string and encrypt.

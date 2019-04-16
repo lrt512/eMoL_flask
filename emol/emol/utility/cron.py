@@ -8,6 +8,7 @@ from uuid import uuid4
 # third-party imports
 from flask import current_app
 
+
 # application imports
 
 
@@ -26,12 +27,12 @@ class CronHelper(object):
         Store the cron token filepath
 
         """
-        self.__token_filename = app.config.get('CRON_TOKEN')
-        current_app.logger.debug('cron_token in {0}'.format(app.config.get('CRON_TOKEN')))
+        self._token_filename = os.path.join(app.instance_path, 'cron_token')
+        current_app.logger.debug('cron_token in {0}'.format(self._token_filename))
 
     def get_cron_token(self):
         """Read the current cron token."""
-        with open(self.__token_filename, 'r') as file_handle:
+        with open(self._token_filename, 'r') as file_handle:
             return file_handle.read()
 
     def new_cron_token(self):
@@ -46,7 +47,7 @@ class CronHelper(object):
 
         """
         # TODO: handle exceptions
-        with open(self.__token_filename, 'w') as file_handle:
+        with open(self._token_filename, 'w') as file_handle:
             token = uuid4().hex
             current_app.logger.debug('New cron token: {0}'.format(token))
             file_handle.write(token)

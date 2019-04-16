@@ -1,23 +1,18 @@
 # -*- coding: utf-8 -*-
 """The home page and its associated views."""
 
-# standard library imports
-
-# third-party imports
+from authomatic import Authomatic
 from authomatic.adapters import WerkzeugAdapter
-from flask_login import current_user, login_user, logout_user, login_required
 from flask import Blueprint, render_template, request, make_response
 from flask import abort, url_for, redirect, session, current_app
+from flask_login import current_user, login_user, logout_user, login_required
 
-# application imports
 from emol.exception.combatant import CombatantDoesNotExist
 from emol.exception.privacy_acceptance import PrivacyPolicyNotAccepted
 from emol.mail import Emailer
 from emol.models import User, Combatant, UpdateRequest
-from emol.utility.setup import is_setup
 
 BLUEPRINT = Blueprint('home', __name__)
-
 
 @BLUEPRINT.route('/')
 def index():
@@ -27,11 +22,6 @@ def index():
     else display the nouser home page
 
     """
-    print(url_for('combatant_admin.combatant_stats'))
-    if is_setup() is False:
-        current_app.logger.info('Redirecting to setup')
-        return redirect(url_for('setup.setup'))
-
     if current_user.is_anonymous is True:
         return render_template('home/nouser.html')
     elif current_user.is_admin is True:
@@ -54,6 +44,9 @@ def login():
     Go to: https://console.developers.google.com
     Select Credentials
     Create credentials for the app
+
+    Authorize the Google+ API
+
     The client ID and client secret go into config.py
         as consumer_key and consumer_secret in the OAUTH2 section
     Set this URL (http://example.com/login) as an authorized redirect URI
@@ -61,7 +54,13 @@ def login():
     """
     session.clear()
     response = make_response()
-    result = current_app.authomatic.login(
+
+    authomatic = Authomatic(
+        current_app.config['AUTHOMATIC_CONFIG'],
+        current_app.config['AUTHOMATIC_SECRET']
+    )
+
+    result = authomatic.login(
         WerkzeugAdapter(request, response), 'google'
     )
 
@@ -69,7 +68,10 @@ def login():
         if result.user:
             result.user.update()
             # User is logged in, now check against our user table
-            user = User.query.filter(User.email == result.user.email).one_or_none()
+            print(result.user)
+            user = User.query.filter(
+                User.email == result.user.email
+            ).one_or_none()
 
             if user is None:
                 # No.
@@ -110,7 +112,7 @@ def request_card():
                 'for retrieving your card'
             )
         except CombatantDoesNotExist:
-            msg ='No combatant found with email "{0}'.format(email)
+            msg = 'No combatant found with email "{0}'.format(email)
         except PrivacyPolicyNotAccepted as exc:
             current_app.logger.error(
                 'Card request for {0} (privacy not accepted)'
@@ -145,7 +147,7 @@ def update_info():
                 'updating your information'
             )
         except CombatantDoesNotExist:
-            msg='No combatant found with email {0}'.format(email)
+            msg = 'No combatant found with email {0}'.format(email)
         except PrivacyPolicyNotAccepted as exc:
             current_app.logger.error(
                 'Card request for {0} (privacy not accepted)'

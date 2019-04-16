@@ -1,6 +1,6 @@
 venv/
-db/
-__pycache__/
+**/__pycache__
+**/instance
 **/.idea
 **/.cache
 **/.vagrant

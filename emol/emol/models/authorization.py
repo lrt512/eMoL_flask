@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 """Model for an authorization."""
 
-# standard library imports
-
-# third-party imports
 from flask import current_app as app
 
-# application imports
 from .discipline import Discipline
 from .named_tuples import NameSlugTuple
 

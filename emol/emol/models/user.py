@@ -205,9 +205,11 @@ class User(app.db.Model):
         if self.has_role(discipline, role) is False:
             return
 
+        discipline = Discipline.find(discipline)
+
         discipline_roles = self.role_objects_for(discipline)
         for user_role in discipline_roles:
-            if user_role.role.slug == role:
+            if user_role.role.slug == role and user_role.role.discipline_id == discipline.id:
                 app.db.session.delete(user_role)
                 break
 
@@ -224,9 +226,11 @@ class User(app.db.Model):
         if self.has_role(discipline, role):
             return
 
+        discipline = Discipline.find(discipline)
+
         user_role = UserRole(
             user=self,
-            role=Role.query.filter(Role.slug == role).one(),
+            role=Role.query.filter(Role.slug == role, Role.discipline == discipline).one(),
             discipline=Discipline.find(discipline) if discipline else None
         )
 

@@ -7,19 +7,17 @@ Various housekeeping tasks to get the app set up. Commentary inline.
 """
 
 import os
-import sys
 
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
-from .commands import initialize
+from .commands import setup, import_combatants
 
 
 def create_app(test_config=None):
     # Instantiate the app and configure from config.py
     app = Flask(__name__, instance_relative_config=True)
-
     # Ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
@@ -27,15 +25,19 @@ def create_app(test_config=None):
         pass
 
     config_path = os.path.join(app.instance_path, 'config.py')
+    config_source = None
     if test_config is not None:
+        config_source = 'Using provided config mapping'
         app.config.from_mapping(test_config)
     elif os.path.exists(config_path):
-        app.config.from_pyfile(config_path)
+        config_source = 'Using {}'.format(config_path)
+        app.config.from_pyfile('config.py')
     else:
+        config_source = 'Using default config mapping'
         app.config.from_mapping(
             DEBUG=True,
             SECRET_KEY='123456',
-            SQLALCHEMY_DATABASE_URI='sqlite:///instance/project.db',
+            SQLALCHEMY_DATABASE_URI='mysql+pymysql://emol:qwert@localhost/emol',
             SQLALCHEMY_TRACK_MODIFICATIONS=False,
             CRON_TOKEN=os.path.join(app.instance_path, 'cron_token'),
             LOG_FILE=os.path.join(app.instance_path, 'emol.log'),
@@ -43,7 +45,8 @@ def create_app(test_config=None):
         )
 
     # Add custom Flask commands
-    app.cli.add_command(initialize)
+    app.cli.add_command(setup)
+    app.cli.add_command(import_combatants)
 
     # Make sure security headers are set on all responses.
     # This should definitely be in some security module or something.
@@ -53,17 +56,23 @@ def create_app(test_config=None):
         response.headers["X-Frame-Options"] = "SAMEORIGIN"
         response.headers['X-Content-Type-Options'] = 'nosniff'
         response.headers['X-XSS-Protection'] = '1; mode=block'
-        response.headers['Content-Security-Policy'] = "default-src 'self'"
+        # response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' cdnjs.cloudflare.com;"
         return response
+
+    app.db = SQLAlchemy()
+    app.migrate = Migrate()
 
     with app.app_context():
         # Now initialize all the things
         from .initialize.logging import init_logging
         init_logging()
 
+        app.db.init_app(app)
+        app.migrate.init_app(app, app.db)
+
+        app.logger.info(config_source)
+
         app.logger.info('Initialize database')
-        app.db = db = SQLAlchemy(app)
-        migrate = Migrate(app, db)
 
         # init_api MUST be called before init_blueprints
         from .initialize.api import init_api
@@ -85,7 +94,3 @@ def create_app(test_config=None):
         init_error_handlers()
 
         return app
-
-
-if __name__ == '__main__':
-    create_app().run(debug=True, host='0.0.0.0', threaded=True)

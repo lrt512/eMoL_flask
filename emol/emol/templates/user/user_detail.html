@@ -54,7 +54,7 @@
                                     <div class="col-md-12">
                                         <select class="picklist" multiple="multiple" name="{{ discipline.slug }}">
                                             {% for role in roles %}
-                                                {% if role.discipline_id != None %}
+                                                {% if role.discipline_id == discipline.id %}
                                                     <option value="{{ role.slug }}" {{ has_role_select(discipline.slug, role.slug, user) }}>
                                                         {{ role.name }}
                                                     </option>
